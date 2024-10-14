@@ -1,0 +1,50 @@
+<edmx:Edmx
+    xmlns:edmx="http://schemas.microsoft.com/ado/2007/06/edmx"
+    xmlns:m="http://schemas.microsoft.com/ado/2007/08/dataservices/metadata"
+    xmlns:sap="http://www.sap.com/Protocols/SAPData" Version="1.0">
+    <edmx:DataServices m:DataServiceVersion="2.0">
+        <Schema
+            xmlns="http://schemas.microsoft.com/ado/2008/09/edm" Namespace="ZPM_WH_REMOVAL_SRV" xml:lang="de" sap:schema-version="1">
+            <EntityType Name="Operation" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Aufnr"/>
+                    <PropertyRef Name="Vornr"/>
+                </Key>
+                <Property Name="Aufnr" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Auftrag" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Vornr" Type="Edm.String" Nullable="false" MaxLength="4" sap:label="Vorgang" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Vorltxt" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="LT Vorgang" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <EntityType Name="Order" sap:content-version="1">
+                <Key>
+                    <PropertyRef Name="Aufnr"/>
+                </Key>
+                <Property Name="Aufnr" Type="Edm.String" Nullable="false" MaxLength="12" sap:label="Auftrag" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+                <Property Name="Auftext" Type="Edm.String" Nullable="false" MaxLength="40" sap:label="Kurztext" sap:creatable="false" sap:updatable="false" sap:sortable="false" sap:filterable="false"/>
+            </EntityType>
+            <Association Name="order_operation" sap:content-version="1">
+                <End Type="ZPM_WH_REMOVAL_SRV.Order" Multiplicity="1" Role="FromRole_order_operation"/>
+                <End Type="ZPM_WH_REMOVAL_SRV.Operation" Multiplicity="*" Role="ToRole_order_operation"/>
+                <ReferentialConstraint>
+                    <Principal Role="FromRole_order_operation">
+                        <PropertyRef Name="Aufnr"/>
+                    </Principal>
+                    <Dependent Role="ToRole_order_operation">
+                        <PropertyRef Name="Aufnr"/>
+                    </Dependent>
+                </ReferentialConstraint>
+            </Association>
+            <EntityContainer Name="ZPM_WH_REMOVAL_SRV_Entities" m:IsDefaultEntityContainer="true" sap:supported-formats="atom json xlsx">
+                <EntitySet Name="OperationSet" EntityType="ZPM_WH_REMOVAL_SRV.Operation" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <EntitySet Name="OrderSet" EntityType="ZPM_WH_REMOVAL_SRV.Order" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:pageable="false" sap:content-version="1"/>
+                <AssociationSet Name="order_operation_AssocSet" Association="ZPM_WH_REMOVAL_SRV.order_operation" sap:creatable="false" sap:updatable="false" sap:deletable="false" sap:content-version="1">
+                    <End EntitySet="OrderSet" Role="FromRole_order_operation"/>
+                    <End EntitySet="OperationSet" Role="ToRole_order_operation"/>
+                </AssociationSet>
+            </EntityContainer>
+            <atom:link
+                xmlns:atom="http://www.w3.org/2005/Atom" rel="self" href="http://dg1.talke.com/sap/opu/odata/sap/ZPM_WH_REMOVAL_SRV/$metadata"/>
+                <atom:link
+                    xmlns:atom="http://www.w3.org/2005/Atom" rel="latest-version" href="http://dg1.talke.com/sap/opu/odata/sap/ZPM_WH_REMOVAL_SRV/$metadata"/>
+                </Schema>
+            </edmx:DataServices>
+        </edmx:Edmx>

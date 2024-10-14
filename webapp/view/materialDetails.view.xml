@@ -1,0 +1,51 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:html="http://www.w3.org/1999/xhtml"
+	xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+	controllerName="com.mindsquare.stock.transfer.controller.materialDetails">
+	<Page showNavButton="true" title="{i18n>matDetails}">
+		<customHeader>
+			<Bar>
+				<contentMiddle>
+					<Title text="{i18n>matDetails}:"/>
+				</contentMiddle>
+			</Bar>
+		</customHeader>
+		<content>
+			<IconTabBar id="idStockTabBar" expanded="{device>/isNoPhone}" class="sapUiResponsiveContentPadding" select="onIconTabPress">
+					<items>
+						<!-- Tab für Freien Bestand -->
+					   <!-- Tab für Freien Bestand -->
+				        <IconTabFilter icon="sap-icon://inventory" key="FreeStock" text="{i18n>freeStock}">
+				            <List id="freeStockList" items="{path: 'StockModel>/FreeStockSet'}">
+				                <StandardListItem
+				                    title="{StockModel>Matnr}"
+				                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Labst} {StockModel>Meins}"
+				                    info="{StockModel>Maktx}" />
+				            </List>
+				        </IconTabFilter>
+				
+				        <!-- Tab für Gesperrten Bestand -->
+				        <IconTabFilter icon="sap-icon://locked" key="BlockedStock" text="{i18n>blockedStock}">
+				            <List id="blockedStockList" items="{path: 'StockModel>/BlockedStockSet'}">
+				                <StandardListItem
+				                    title="{StockModel>Matnr}"
+				                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Sperrbestand} {StockModel>Meins}"
+				                    info="{StockModel>Maktx}" />
+				            </List>
+				        </IconTabFilter>
+				
+				        <!-- Tab für Qualitätsprüfbestand -->
+				        <IconTabFilter icon="sap-icon://quality-issue" key="QualityStock" text="{i18n>qualityStock}">
+				            <List id="qualityStockList" items="{path: 'StockModel>/QualityStockSet'}">
+				                <StandardListItem
+				                    title="{StockModel>Matnr}"
+				                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Qmbestand} {StockModel>Meins}"
+				                    info="{StockModel>Maktx}" />
+				            </List>
+				        </IconTabFilter>
+					
+					</items>
+				</IconTabBar>
+
+		</content>
+	</Page>
+</mvc:View>

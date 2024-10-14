@@ -1,0 +1,146 @@
+{
+	"_version": "1.1.0",
+	"sap.app": {
+		"_version": "1.1.0",
+		"id": "com.mindsquare.stock.transfer",
+		"type": "application",
+		"i18n": "i18n/i18n.properties",
+		"applicationVersion": {
+			"version": "1.0.0"
+		},
+		"title": "{{appTitle}}",
+		"description": "{{appDescription}}",
+		"resources": "resources.json",
+		"ach": "ach",
+		"sourceTemplate": {
+			"id": "servicecatalog.connectivityComponentForManifest",
+			"version": "0.0.0"
+		},
+		"dataSources": {
+			"ZMDE_MM_STOCK_TRANSFER_SRV": {
+				"uri": "/sap/opu/odata/sap/ZMDE_MM_STOCK_TRANSFER_SRV/",
+				"type": "OData",
+				"settings": {
+					"localUri": "localService/ZMDE_MM_STOCK_TRANSFER_SRV/metadata.xml"
+				}
+			}
+		}
+	},
+	"sap.ui": {
+		"_version": "1.1.0",
+		"technology": "UI5",
+		"icons": {
+			"icon": "",
+			"favIcon": "",
+			"phone": "",
+			"phone@2": "",
+			"tablet": "",
+			"tablet@2": ""
+		},
+		"deviceTypes": {
+			"desktop": true,
+			"tablet": true,
+			"phone": true
+		},
+		"supportedThemes": ["sap_hcb", "sap_belize"]
+	},
+	"sap.ui5": {
+		"_version": "1.1.0",
+		"rootView": {
+			"viewName": "com.mindsquare.stock.transfer.view.app",
+			"type": "XML"
+		},
+		"dependencies": {
+			"minUI5Version": "1.30.0",
+			"libs": {
+				"sap.m": {},
+				"sap.ui.core": {}
+			}
+		},
+		"contentDensities": {
+			"compact": true,
+			"cozy": true
+		},
+		"models": {
+			"i18n": {
+				"type": "sap.ui.model.resource.ResourceModel",
+				"settings": {
+					"bundleName": "com.mindsquare.stock.transfer.i18n.i18n"
+				}
+			},
+			"view": {
+				"type": "sap.ui.model.json.JSONModel",
+				"settings": {}
+			},
+			"": {
+				"type": "sap.ui.model.odata.v2.ODataModel",
+				"settings": {
+					"defaultOperationMode": "Server",
+					"defaultBindingMode": "OneWay",
+					"defaultCountMode": "Request"
+				},
+				"dataSource": "ZMDE_MM_STOCK_TRANSFER_SRV",
+				"preload": true
+			}, 
+			"ErrorPlant": {
+				"type": "sap.ui.model.json.JSONModel",
+				"settings": {},
+				"uri": ""
+			}
+		},
+		"resources": {
+			"css": [{
+				"uri": "css/style.css"
+			}]
+		},
+		"routing": {
+			"config": {
+				"routerClass": "sap.m.routing.Router",
+				"viewPath": "com.mindsquare.stock.transfer.view",
+				"controlId": "app",
+				"viewLevel": 1,
+				"controlAggregation": "pages",
+				"bypassed": {
+					"target": []
+				}
+			},
+			"routes": [{
+				"name": "werkauswahl",
+				"pattern": "",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["werkauswahl"]
+			},
+			{
+				"name": "materialDetails",
+				"pattern": "materialDetails/{matnr}/{lgort}/{werks}",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["materialDetails"]
+				}
+			],
+			"targets": {
+				"werkauswahl": {
+					"viewType": "XML",
+					"transition": "slide",
+					"clearAggregation": true,
+					"viewName": "werkauswahl"
+				},
+				"materialDetails": {
+					"viewType": "XML",
+					"transition": "slide",
+					"clearAggregation": true,
+					"viewName": "materialDetails"
+				}
+			}
+		}
+	},
+	"sap.platform.abap": {
+		"uri": "/sap/bc/ui5_ui5/mind2/mm_kommi_pri/webapp",
+		"_version": "1.1.0"
+	},
+	"sap.platform.hcp": {
+		"uri": "webapp",
+		"_version": "1.1.0"
+	}
+}

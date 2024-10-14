@@ -1,0 +1,32 @@
+{
+  "generation": [
+    {
+      "templateId": "servicecatalog.connectivityComponent",
+      "templateVersion": "0.0.0",
+      "dateTimeStamp": "Wed, 23 May 2018 15:19:28 GMT"
+    },
+    {
+      "templateId": "ui5template.basicSAPUI5ApplicationComponent",
+      "templateVersion": "1.4.0",
+      "dateTimeStamp": "Thu, 31 May 2018 07:59:06 GMT"
+    }
+  ],
+  "mockpreview": {
+    "mockUri": "/sap/opu/odata/sap/ZPM_WH_REMOVAL_SRV",
+    "metadataFilePath": "",
+    "loadJSONFiles": false,
+    "loadCustomRequests": false,
+    "mockRequestsFilePath": "localService/metadata.xml"
+  },
+  "translation": {
+    "translationDomain": "",
+    "supportedLanguages": "",
+    "defaultLanguage": "",
+    "defaultI18NPropertyFile": "",
+    "resourceModelName": ""
+  },
+  "deploy": {
+    "destination": "DG1GatewayDev",
+    "name": "ZPM_WH_REMOVAL"
+  }
+}

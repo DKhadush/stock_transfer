@@ -1,0 +1,32 @@
+specVersion: "2.4"
+metadata:
+  name: com.mindsquare.gdmvt.remove.gooiss
+type: application
+server:
+  customMiddleware:
+    - name: fiori-tools-proxy
+      afterMiddleware: compression
+      configuration:
+        ignoreCertError: false
+        backend:
+          - path: /sap
+            url: https://vhputd07ci.hec.putzmeister.com:44300
+            client: "010"
+            destination: E01
+        ui5:
+          path:
+            - /resources
+            - /test-resources
+          url: https://ui5.sap.com
+          version: 1.84.28
+    - name: fiori-tools-appreload
+      afterMiddleware: compression
+      configuration:
+        port: 35729
+        path: webapp
+        delay: 300
+    - name: fiori-tools-preview
+      afterMiddleware: fiori-tools-appreload
+      configuration:
+        component: com.mindsquare.gdmvt.remove.gooiss
+        ui5Theme: sap_fiori_3

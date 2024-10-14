@@ -1,0 +1,30 @@
+# yaml-language-server: $schema=https://sap.github.io/ui5-tooling/schema/ui5.yaml.json
+
+specVersion: "2.4"
+metadata:
+  name: com.mindsquare.gdmvt.remove.gooiss
+type: application
+builder:
+  resources:
+    excludes:
+      - /test/**
+      - /localService/**
+  customTasks:
+    - name: deploy-to-abap
+      afterTask: generateCachebusterInfo
+      configuration:
+        ignoreCertError: true
+        target:
+          destination: E01
+          url: https://vhpute01ci.hec.putzmeister.com:44300
+          client: "010"
+        credentials:
+          username: env:XYZ_USER
+          password: env:XYZ_PASSWORD
+        app:
+          name: ZMM_DELPICK
+          description: Mindsquare Pick Delivery
+          package: ZMDE
+          transport: E01K9A0WY1
+        exclude:
+          - /test/

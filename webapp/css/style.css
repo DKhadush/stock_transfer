@@ -1,0 +1,20 @@
+/* Enter your custom styles here */
+
+/* Custom Größe für Buttons
+button {
+}
+#__xmlview1--btn_stop {
+    background-color: yellow;
+    color: red;
+}*/
+
+#selectDialog-searchField {
+	display:none;
+}
+.gdmvt_remove_gooiss .padding {
+	padding: .6rem 1rem;
+}
+
+.boldText {
+	font-weight: bold;
+}
