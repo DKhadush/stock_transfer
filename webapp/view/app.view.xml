@@ -1,11 +1,6 @@
 <mvc:View controllerName="com.mindsquare.stock.transfer.controller.app" xmlns:html="http://www.w3.org/1999/xhtml" xmlns:mvc="sap.ui.core.mvc"
- xmlns="sap.m">
-     <App id="app">
-         <Page title="{i18n>appTitle}">
-             <!-- Hier wird der Inhalt von werkauswahl oder anderen Views gerendert -->
-             <content>
-                 <mvc:XMLView viewName="com.mindsquare.stock.transfer.view.werkauswahl"/>
-             </content>
-         </Page>
-     </App>
- </mvc:View>
+	xmlns="sap.m">
+	<App id="app" class="gdmvt_remove_mdeapp">
+	
+	</App>
+</mvc:View>

@@ -32,8 +32,8 @@
                 	<!-- Ziellagerort Auswahl (initial unsichtbar) -->
 	                <VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin" visible="false">
 	                    <Label text="{i18n>deststorageLocation}" />
-	                    <ComboBox id="zlgortComboBox" placeholder="{i18n>selectStorageLocation}" items="{Lgort>/}">
-	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />
+	                    <ComboBox id="zlgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
+	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />          
 	                    </ComboBox>
 	                </VBox>
                 </HBox>

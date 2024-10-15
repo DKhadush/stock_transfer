@@ -82,6 +82,11 @@
 				"dataSource": "ZMDE_MM_STOCK_TRANSFER_SRV",
 				"preload": true
 			}, 
+			"materialTransfer": {
+				"type": "sap.ui.model.json.JSONModel",
+				"settings": {},
+				"uri": ""
+			},
 			"ErrorPlant": {
 				"type": "sap.ui.model.json.JSONModel",
 				"settings": {},
@@ -112,12 +117,26 @@
 				"target": ["werkauswahl"]
 			},
 			{
+				"name": "materialTransfer",
+				"pattern": "materialTransfer/{matnr}/{lgort}/{werks}",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["materialTransfer"]
+			},
+			{
 				"name": "materialDetails",
 				"pattern": "materialDetails/{matnr}/{lgort}/{werks}",
 				"titleTarget": "",
 				"greedy": false,
 				"target": ["materialDetails"]
-				}
+			},
+			{
+				"name": "addMaterial",
+				"pattern": "/addMaterial/{matnr}/{lgort}/{werks}/{labst}/{meins}/{maktx}",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["addMaterial"]
+			}
 			],
 			"targets": {
 				"werkauswahl": {
@@ -131,6 +150,16 @@
 					"transition": "slide",
 					"clearAggregation": true,
 					"viewName": "materialDetails"
+				},
+				"materialTransfer": {
+					"viewType": "XML",
+					"viewName": "materialTransfer"
+				},
+				"addMaterial": {
+					"viewType": "XML",
+					"transition": "slide",
+					"clearAggregation": true,
+					"viewName": "addMaterial"
 				}
 			}
 		}

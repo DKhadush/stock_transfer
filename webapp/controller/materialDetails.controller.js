@@ -79,6 +79,84 @@ sap.ui.define([
                 }
             });
         },
-	});
+        
+		onIconTabPress: function (oEvent) {
 
+			try {
+				switch (oEvent.getSource().getSelectedKey()) {
+					case "Basket":
+						this.getView().byId("btnPost").setVisible(true);
+						var oList = this.getView().byId("basketList").getBinding("items");
+						oList.getModel().updateBindings(true)
+						break;
+					case "MaterialList":
+						this.getView().byId("btnPost").setVisible(false);
+
+						var oInputField = this.getView().byId("iMaterial");
+						jQuery.sap.delayedCall(750, this, function () {
+							oInputField.focus();
+						});
+
+						break;
+					case "Header":
+						this.getView().byId("btnPost").setVisible(true);
+						break;
+				}
+			} catch (e) {
+				// console.log("Error, but show button.");
+				this.getView().byId("btnPost").setVisible(true);
+			}
+
+		},
+		
+		onPressEvent: function (oEvent) {
+			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+			var oSelectedItem = oEvent.getSource();
+            var oContext = oSelectedItem.getBindingContext("StockModel");
+
+			var oList = this.getView().byId("basketList");
+			var aItems = oList.getItems();
+			if (aItems.length != 0) {
+				oData.Menge = (parseFloat(oData.Menge) - parseFloat(this._getQuantityFromBasket(oData.Matnr, oData.Rspos))).toFixed(3);
+			}
+			
+			var oMatnr = oContext.getProperty("Matnr");
+            var oWerks = oContext.getProperty("Werks");
+            var oLgort= oContext.getProperty("Lgort");
+            var sMeins = oContext.getProperty("Meins");
+    		var sLabst = oContext.getProperty("Labst");
+    		var sMaktx = oContext.getProperty("Maktx");
+            
+			oRouter.navTo("addMaterial", {
+				matnr: oMatnr,
+                lgort: oLgort,
+                werks: oWerks, 
+                meins: sMeins,
+                labst: sLabst,
+                maktx: sMaktx
+			});
+		},
+
+		onMaterialListItemPress: function (oEvent) {
+			this.getView().byId("btnPost").setVisible(false);
+
+			var oCtx = oEvent.getSource().getBindingContext("materialList");
+			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+			var sResult = {
+				sMatnr: oEvent.getSource().getBindingContext("materialList").getProperty("Matnr"),
+				sMatkx: oEvent.getSource().getBindingContext("materialList").getProperty("Matkx"),
+				sLabst: oEvent.getSource().getBindingContext("materialList").getProperty("Labst"),
+				sWerks: oEvent.getSource().getBindingContext("materialList").getProperty("Werks"),
+				sLgort: oEvent.getSource().getBindingContext("materialList").getProperty("Lgort"),
+				sPath: oCtx.getPath().substring(oCtx.getPath().lastIndexOf("/") + 1, oCtx.getPath().length),
+				sFlag: "X"
+			};
+
+			var sDetails = JSON.stringify(sResult);
+
+			oRouter.navTo("addMaterialMod", {
+						details: sDetails
+			});
+		}
+	});
 });

@@ -2,10 +2,11 @@
 	xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
 	controllerName="com.mindsquare.stock.transfer.controller.materialDetails">
 	<Page showNavButton="true" title="{i18n>matDetails}">
+		
 		<customHeader>
 			<Bar>
 				<contentMiddle>
-					<Title text="{i18n>matDetails}:"/>
+					<Title text="{i18n>matDetails} für Werk {StockModel>/Werks} Lagerort {StockModel>/Lgort}: "/>
 				</contentMiddle>
 			</Bar>
 		</customHeader>
@@ -14,16 +15,32 @@
 					<items>
 						<!-- Tab für Freien Bestand -->
 					   <!-- Tab für Freien Bestand -->
-				        <IconTabFilter icon="sap-icon://inventory" key="FreeStock" text="{i18n>freeStock}">
+				        <IconTabFilter icon="sap-icon://inventory" key="FreeStock">
 				            <List id="freeStockList" items="{path: 'StockModel>/FreeStockSet'}">
 				                <StandardListItem
 				                    title="{StockModel>Matnr}"
-				                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Labst} {StockModel>Meins}"
-				                    info="{StockModel>Maktx}" />
+				                    description="{StockModel>Maktx}"
+				                    info=" {StockModel>Labst} {StockModel>Meins}" type="Active" press="onPressEvent"/>
 				            </List>
 				        </IconTabFilter>
-				
-				        <!-- Tab für Gesperrten Bestand -->
+				        
+				        <IconTabFilter id="basket" key="Basket" icon="sap-icon://cart" count="{materialList>/materials.length}">
+							<List id="basketList" noDataText="{i18n>noMaterialList}" items="{materialList>/materials}" updateFinished="onUpdateFinished">
+								<items>
+									<ObjectListItem title="{materialList>Matnr}" type="Active" press="onMaterialListItemPress" number="{materialList>Menge}"
+										numberUnit="{materialList>Ausme}">
+										<attributes>
+											<ObjectAttribute text="{materialList>Lgort} | {materialList>Lgpbe}" visible="{= ${materialList>Lgpbe} ? true : false }"/>
+											<ObjectAttribute text="{materialList>Lgort}" visible="{= ${materialList>Lgpbe} ? false : true }"/>
+											<ObjectAttribute text="{materialList>Maktx}"/>
+											<!--	<ObjectAttribute text="{ path: 'materialList>Bdter', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd.MM.yy', displayFormat: 'Date', UTC:true } }"/>-->
+										</attributes>
+									</ObjectListItem>
+								</items>
+							</List>
+						</IconTabFilter>
+					
+				        <!-- Tab für Gesperrten Bestand>
 				        <IconTabFilter icon="sap-icon://locked" key="BlockedStock" text="{i18n>blockedStock}">
 				            <List id="blockedStockList" items="{path: 'StockModel>/BlockedStockSet'}">
 				                <StandardListItem
@@ -33,7 +50,7 @@
 				            </List>
 				        </IconTabFilter>
 				
-				        <!-- Tab für Qualitätsprüfbestand -->
+				        <Tab für Qualitätsprüfbestand>
 				        <IconTabFilter icon="sap-icon://quality-issue" key="QualityStock" text="{i18n>qualityStock}">
 				            <List id="qualityStockList" items="{path: 'StockModel>/QualityStockSet'}">
 				                <StandardListItem
@@ -41,11 +58,33 @@
 				                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Qmbestand} {StockModel>Meins}"
 				                    info="{StockModel>Maktx}" />
 				            </List>
-				        </IconTabFilter>
-					
-					</items>
+				        </IconTabFilter-->
+				        
+				      </items>
 				</IconTabBar>
-
+				<Dialog showHeader="true" title="{i18n>bookingDailog}" id="bookingDialog" verticalScrolling="false">
+					<content>
+						<!-- <CheckBox text="{i18n>printDocument}" selected="true" id="PrintFlag"/> -->
+						<Text text="{i18n>yousure}"/>
+					</content>
+					<beginButton>
+						<Button text="{i18n>cancel}" icon="sap-icon://sys-cancel" type="Reject" data:id="bookingDialog" press="onDialog"/>
+					</beginButton>
+					<endButton>
+						<Button text="{i18n>post}" icon="sap-icon://save" type="Accept" press="onBtnPostPress"/>
+					</endButton>
+				</Dialog>
 		</content>
+		<footer>
+			<Bar class="sapContrast sapContrastPlus">
+				<contentLeft>
+					<Button text="{i18n>cancel}" class="sapUiLargeMargins" icon="sap-icon://sys-cancel" type="Reject" press="onBtnCancelPress"/>
+				</contentLeft>
+				<contentRight>
+					<Button id="btnPost" text="{i18n>post}" class="sapUiLargeMargins" icon="sap-icon://save" type="Accept" data:id="bookingDialog"
+						press="onDialog" visible="false"/>
+				</contentRight>
+			</Bar>
+		</footer>
 	</Page>
 </mvc:View>

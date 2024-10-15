@@ -1,0 +1,74 @@
+<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" 
+		xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:u="sap.ui.unified" 
+		xmlns:f="sap.ui.layout.form" xmlns:html="http://www.w3.org/1999/xhtml" 
+		controllerName="com.mindsquare.stock.transfer.controller.addMaterial">
+	<Page id="addMaterial" title="{i18n>addMaterial} nach Werk ??? Lagerort ???:">
+		<FlexBox width="100%" alignItems="Center" justifyContent="Center">
+                <items>
+                    <FlexBox width="90%" alignItems="Center" justifyContent="Center">
+                        <items>
+                            <VBox class="sapUiSmallMargin">
+                                <f:SimpleForm id="formMaterial" editable="true" layout="ResponsiveGridLayout" singleContainerFullSize="false">
+                                    <f:content>
+                                        <FlexBox direction="Column">
+                                            <FlexBox direction="Row" class="sapUiNoMargin">
+                                                <!-- Materialnummer -->
+                                                <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>material}"/>
+                                                    <Input value="{MaterialModel>/Matnr}" type="Text" editable="false"/>
+                                                </FlexBox>
+                                            </FlexBox>
+                                            
+                                            <!-- Materialbeschreibung -->
+                                            <FlexBox direction="Row" class="sapUiTinyMarginTop">
+                                                <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>description}"/>
+                                                    <Input value="{MaterialModel>/Maktx}" editable="false"/>
+                                                </FlexBox>
+                                            </FlexBox>
+                                            
+                                            <!-- Lagerort -->
+                                            <FlexBox direction="Row" class="sapUiTinyMarginTop">
+                                            	 <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>plant}"/>
+                                                    <Input value="{MaterialModel>/Werks}" editable="false"/>
+                                                </FlexBox>
+                                                <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>storageLocation}"/>
+                                                    <Input value="{MaterialModel>/Lgort}" editable="false"/>
+                                                </FlexBox>
+                                            </FlexBox>
+
+                                            <!-- Lagerbestand (Labst) und Einheit -->
+                                            <FlexBox direction="Row" class="sapUiTinyMarginTop">
+                                                <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>freeGoods}"/>
+                                                    <Input value="{path: 'MaterialModel>/Labst', type: 'sap.ui.model.type.Float'} {MaterialModel>/Meins}" editable="false"/>
+                                                </FlexBox>
+                                            </FlexBox>
+
+                                            <!-- Eingabefeld für Menge -->
+                                            <Label text="{i18n>enterQuantity}" />
+                                            <Input id="iMenge" value="{path: 'Menge', type: 'sap.ui.model.type.Float'}" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
+                                        </FlexBox>
+                                    </f:content>
+                                </f:SimpleForm>
+                            </VBox>
+                        </items>
+                    </FlexBox>
+                </items>
+            </FlexBox>
+            	<footer>
+			<Bar class="sapContrast sapContrastPlus">
+				<contentLeft>
+					<Button text="{i18n>cancel}" width="auto" icon="sap-icon://sys-cancel" type="Reject" press="onBtnCancelPress"/>
+				</contentLeft>
+				<contentRight>
+					<Button text="{i18n>addMaterial}" width="auto" icon="sap-icon://add" type="Accept" press="onBtnSubmitPress"/>
+				</contentRight>
+				<contentMiddle/>
+			</Bar>
+		</footer>
+
+	</Page>
+</mvc:View>

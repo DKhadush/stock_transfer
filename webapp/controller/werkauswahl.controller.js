@@ -45,10 +45,12 @@ sap.ui.define([
                 // Lagerort-Dropdown sichtbar machen
                 this.byId("lgortComboBox").setSelectedKey(null);
                 this.byId("lgortComboVBox").setVisible(true);
+                this.byId("stockTable").setVisible(false);
                 
             } else {
                 // Lagerort-Dropdown ausblenden, wenn kein Werk ausgewählt ist
                 this.byId("lgortComboVBox").setVisible(false);
+                this.byId("stockTable").setVisible(false);
             }
         },
         
@@ -61,10 +63,12 @@ sap.ui.define([
                 // Lagerort-Dropdown sichtbar machen
                 this.byId("zlgortComboBox").setSelectedKey(null);
                 this.byId("zlgortComboVBox").setVisible(true);
+                this.byId("stockTable").setVisible(false);
                 
             } else {
                 // Lagerort-Dropdown ausblenden, wenn kein Werk ausgewählt ist
                 this.byId("zlgortComboVBox").setVisible(false);
+                this.byId("stockTable").setVisible(false);
             }
         },
 
@@ -86,18 +90,17 @@ sap.ui.define([
             });
         }, 
         
-        onStorageLocationChange: function (oEvent) {
-            var sSelectedStorageLoc = oEvent.getSource().getSelectedKey();
+        onStorageLocationChange: function () {
+            var sSelectedStorageLoc = this.byId("lgortComboBox").getSelectedKey();
             var sSelectedPlant = this.byId("werksComboBox").getSelectedKey();
             var sSelectedDestStorageLoc = this.byId("zlgortComboBox").getSelectedKey();
+			var sSelectedDestPlant = this.byId("zwerksComboBox").getSelectedKey();
 			
-            if (sSelectedPlant && sSelectedStorageLoc) {
+            if (sSelectedDestPlant && sSelectedPlant && sSelectedStorageLoc && sSelectedDestStorageLoc) {
+        		// Bestände laden und manuell binden
+	            this._loadStock(sSelectedPlant, sSelectedStorageLoc);
                 // Zeige die Tabelle an
                 this.byId("stockTable").setVisible(true);
-				if (sSelectedDestStorageLoc && sSelectedStorageLoc) {
-	                // Bestände laden und manuell binden
-	                this._loadStock(sSelectedPlant, sSelectedStorageLoc);
-				}
             } 
             else {
         		oSmartTable.setVisible(false);
@@ -108,12 +111,13 @@ sap.ui.define([
         	var sSelectedDestPlant = this.byId("zwerksComboBox").getSelectedKey();
             var sSelectedDestStorageLoc = oEvent.getSource().getSelectedKey();
             var sSelectedStorageLoc = this.byId("lgortComboBox").getSelectedKey();
+			var sSelectedPlant = this.byId("werksComboBox").getSelectedKey();
 			
-            if (sSelectedDestPlant && sSelectedDestStorageLoc) {
-               	if (sSelectedDestStorageLoc && sSelectedStorageLoc) {
-	                // Bestände laden und manuell binden
-	                this._loadStock(sSelectedPlant, sSelectedStorageLoc);
-				}
+            if (sSelectedDestPlant && sSelectedPlant && sSelectedStorageLoc && sSelectedDestStorageLoc) {
+        		// Bestände laden und manuell binden
+	            this._loadStock(sSelectedPlant, sSelectedStorageLoc);
+                // Zeige die Tabelle an
+                this.byId("stockTable").setVisible(true);
             } 
             else {
         		oSmartTable.setVisible(false);
@@ -141,11 +145,11 @@ sap.ui.define([
 		            	// Setze ein leeres Modell, um die Tabelle zu leeren
 			            var oEmptyModel = new sap.ui.model.json.JSONModel([]);
 			            this.getView().setModel(oEmptyModel, "StockModel");
-		                sap.m.MessageToast.show("No stock available for this selection.");
+		                sap.m.MessageToast.show("Keine Materialien vorhanden");
 		            }
                 }.bind(this),
                 error: function () {
-                    MessageToast.show("Fehler beim Laden der Bestände.");
+                    MessageToast.show("Keine Materialien für die Selektion gepflegt.");
                 }
             });
         },
@@ -171,6 +175,5 @@ sap.ui.define([
                 
             });
         }
-     
     });
 });
