@@ -9,6 +9,10 @@ sap.ui.define([
     return baseController.extend("com.mindsquare.stock.transfer.controller.werkauswahl", {
 
         onInit: function () {
+        	// Erstelle ein globales Modell
+         
+            // Router initialisieren
+            this.getRouter().initialize();
             var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
             oRouter.getRoute("werkauswahl").attachPatternMatched(this._onObjectMatched, this);
         },
