@@ -20,7 +20,7 @@ sap.ui.define(
 		"use strict";
 		var oAusme;
 		return baseController.extend(
-			"com.mindsquare.gdmvt.remove.mdeapp.controller.addMaterial", {
+			"com.mindsquare.stock.transfer.controller.addMaterial", {
 			onInit: function () {
 
 				var oRouter = sap.ui.core.UIComponent.getRouterFor(this);

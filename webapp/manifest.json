@@ -132,7 +132,7 @@
 			},
 			{
 				"name": "addMaterial",
-				"pattern": "/addMaterial/{matnr}/{lgort}/{werks}",
+				"pattern": "/addMaterial/{matnr}/{lgort}/{werks}/{meins}/{labst}/{maktx}",
 				"titleTarget": "",
 				"greedy": false,
 				"target": ["addMaterial"]

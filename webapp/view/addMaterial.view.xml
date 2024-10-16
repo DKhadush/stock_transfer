@@ -2,7 +2,7 @@
 		xmlns="sap.m" xmlns:l="sap.ui.layout" xmlns:u="sap.ui.unified" 
 		xmlns:f="sap.ui.layout.form" xmlns:html="http://www.w3.org/1999/xhtml" 
 		controllerName="com.mindsquare.stock.transfer.controller.addMaterial">
-	<Page id="addMaterial" title="{i18n>addMaterial} nach Werk ??? Lagerort ???:">
+	<Page id="addMaterial" title="{i18n>addMaterial} nach Werk {globalModel>/zielWerks} Lagerort {globalModel>/zielLgort}: ">
 		<FlexBox width="100%" alignItems="Center" justifyContent="Center">
                 <items>
                     <FlexBox width="90%" alignItems="Center" justifyContent="Center">
@@ -23,7 +23,7 @@
                                             <FlexBox direction="Row" class="sapUiTinyMarginTop">
                                                 <FlexBox direction="Column" class="sapUiTinyMarginEnd">
                                                     <Label text="{i18n>description}"/>
-                                                    <Input value="{MaterialModel>/Maktx}" editable="false"/>
+                                                    <Input value="{MaterialModel>/Maktx}" type="Text" editable="false"/>
                                                 </FlexBox>
                                             </FlexBox>
                                             
@@ -43,7 +43,7 @@
                                             <FlexBox direction="Row" class="sapUiTinyMarginTop">
                                                 <FlexBox direction="Column" class="sapUiTinyMarginEnd">
                                                     <Label text="{i18n>freeGoods}"/>
-                                                    <Input value="{path: 'MaterialModel>/Labst', type: 'sap.ui.model.type.Float'} {MaterialModel>/Meins}" editable="false"/>
+                                                    <Input value="{MaterialModel>/Labst} {MaterialModel>/Meins}" editable="false"/>
                                                 </FlexBox>
                                             </FlexBox>
 

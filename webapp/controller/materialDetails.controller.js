@@ -123,17 +123,17 @@ sap.ui.define([
 			var oMatnr = oContext.getProperty("Matnr");
             var oWerks = oContext.getProperty("Werks");
             var oLgort= oContext.getProperty("Lgort");
-            var sMeins = oContext.getProperty("Meins");
-    		var sLabst = oContext.getProperty("Labst");
-    		var sMaktx = oContext.getProperty("Maktx");
+            var oMeins = oContext.getProperty("Meins");
+    		var oLabst = oContext.getProperty("Labst");
+    		var oMaktx = oContext.getProperty("Maktx");
             
 			oRouter.navTo("addMaterial", {
 				matnr: oMatnr,
                 lgort: oLgort,
                 werks: oWerks, 
-                meins: sMeins,
-                labst: sLabst,
-                maktx: sMaktx
+                meins: oMeins,
+                labst: oLabst,
+                maktx: oMaktx
 			});
 		},
 

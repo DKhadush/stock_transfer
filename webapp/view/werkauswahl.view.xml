@@ -1,5 +1,11 @@
-<mvc:View controllerName="com.mindsquare.stock.transfer.controller.werkauswahl" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-	xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+<mvc:View controllerName="com.mindsquare.stock.transfer.controller.werkauswahl" 
+		xmlns:mvc="sap.ui.core.mvc" 
+		displayBlock="true"
+		xmlns="sap.m" 
+		xmlns:core="sap.ui.core" 
+		xmlns:html="http://www.w3.org/1999/xhtml"
+		xmlns:smartTable="sap.ui.comp.smarttable" 
+		xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
     <App id="GR_App">
         <Page title="{i18n>appTitle}" showNavButton="true">
             <content>
@@ -12,7 +18,7 @@
 	                    </ComboBox>
                 	</VBox>
 	                
-	                <!-- Zielwerk Auswahl -->
+	                <!-- Nach Werk Auswahl -->
 	                <VBox id="zwerksComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
 	                    <Label text="{i18n>destplant}" />
 	                    <ComboBox id="zwerksComboBox" placeholder="{i18n>selectPlant}" selectionChange=".onDestPlantSelectionChange" items="{Werks>/}">
@@ -21,98 +27,31 @@
 	                </VBox>
             	</HBox>
                 <HBox>
-                	<!-- Lagerort Auswahl (initial unsichtbar) -->
-	                <VBox id="lgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin" visible="false">
+                	<!-- Lagerort Auswahl -->
+	                <VBox id="lgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
 	                    <Label text="{i18n>storageLocation}" />
 	                    <ComboBox id="lgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
 	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />
 	                    </ComboBox>
                 	</VBox>
                 
-                	<!-- Ziellagerort Auswahl (initial unsichtbar) -->
-	                <VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin" visible="false">
+                	<!-- Ziellagerort Auswahl -->
+	                <VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
 	                    <Label text="{i18n>deststorageLocation}" />
 	                    <ComboBox id="zlgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
 	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />          
 	                    </ComboBox>
 	                </VBox>
                 </HBox>
-                
-                
-                
-				 <smartTable:SmartTable id="stockTable" 
-										 tableType="ResponsiveTable" 
-										 entitySet="stockItemSet" 
-						                 visible="false" 
-						                 header="{i18n>appTitle}" 
-						                 showRowCount="true" 
-						                 useExportToExcel="true" 
-    									 enableAutoBinding="false" 
-    									 useVariantManagement="true" 
-    									 showVariantManagement="true"
-    									 useTablePersonalisation="true" 
-    									 showFullScreenButton="true" 
-    									 initiallyVisibleFields="Matnr,Maktx" 
-    									 requestAtLeastFields="Matnr,Werks,Lgort,Maktx,Labst" 
-    									 xmlns:smartTable="sap.ui.comp.smarttable"
-    									 class="sapUiSmallMargin">
-                    <Table noDataText="{i18n>noData}" items="{StockModel>/}" width="auto" sticky="ColumnHeaders" 
-        				mode="None" growing="true" growingScrollToLoad="true" growingThreshold="20">
-                    	<columns>
-                        	<Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Matnr", "leadingProperty": "Matnr", "sortProperty": "Matnr", "filterProperty": "Matnr", "columnIndex": "1", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>material}" />
-				            </Column>
-				            
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Maktx", "leadingProperty": "Maktx", "sortProperty": "Maktx", "filterProperty": "Maktx", "columnIndex": "2", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>description}" />
-				            </Column>
-				            
-				            <!--Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Labst", "leadingProperty": "Labst", "sortProperty": "Labst", "filterProperty": "Labst", "columnIndex": "3", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>quantity}" />
-				            </Column>
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Werks", "leadingProperty": "Werks", "sortProperty": "Werks", "filterProperty": "Werks", "columnIndex": "4", "visible": false}'/>
-				                </customData>
-				                <Text text="{i18n>plant}" />
-				            </Column>
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Lgort", "leadingProperty": "Lgort", "sortProperty": "Lgort", "filterProperty": "Lgort", "columnIndex": "5", "visible": false}'/>
-				                </customData>
-				                <Text text="{i18n>storageLocation}" />
-				            </Column-->
-					    </columns>
-	                    <items>
-						    <ColumnListItem  type="Navigation" press="navToDetail">
-						        <cells>
-						            <Text text="{StockModel>Matnr}" />	
-						            <Text text="{StockModel>Maktx}" />
-						            <Text text="{StockModel>Labst}" />
-						            <Text text="{StockModel>Werks}" />
-						            <Text text="{StockModel>Lgort}" />
-						        </cells>
-						    </ColumnListItem>
-						</items>
-                    </Table>
-                
-                </smartTable:SmartTable>
-		
             </content>
+            <footer>
+					<Bar class="sapContrast sapContrastPlus">
+						<contentRight>
+							<Button id="btnStock" text="{i18n>loadingMaterials}" class="sapUiLargeMargins" icon="sap-icon://save" type="Accept" data:id="bookingDialog"
+								press="navToBestand" visible="false"/>
+						</contentRight>
+					</Bar>
+				</footer>
         </Page>
     </App>
 </mvc:View>

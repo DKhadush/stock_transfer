@@ -6,7 +6,7 @@
 		<customHeader>
 			<Bar>
 				<contentMiddle>
-					<Title text="{i18n>matDetails} für Werk {StockModel>/Werks} Lagerort {StockModel>/Lgort}: "/>
+					<Title text="{i18n>matDetails} für Werk {globalModel>/Werks} Lagerort {globalModel>/Lgort}: "/>
 				</contentMiddle>
 			</Bar>
 		</customHeader>

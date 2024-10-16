@@ -32,7 +32,6 @@ sap.ui.define([
             this._loadWerks();
         },
 
-        
         _loadWerks: function () {
             var oModel = this.getView().getModel();
 
@@ -128,6 +127,55 @@ sap.ui.define([
             else {
         		oSmartTable.setVisible(false);
     		}
+        },
+       
+        _loadStock: function (sPlant, sStorageLoc) {
+            var oModel = this.getView().getModel();
+
+            var aFilters = [
+                new Filter("Werks", FilterOperator.EQ, sPlant),
+                new Filter("Lgort", FilterOperator.EQ, sStorageLoc)
+            ];
+
+		    oModel.read("/stockItemSet", {
+		        filters: aFilters,
+		        success: function (oData) {
+		            if (oData.results.length > 0) {
+		                var oStockModel = new sap.ui.model.json.JSONModel(oData.results);
+		                this.getView().setModel(oStockModel, "StockModel");
+		            } else {
+		            	// Setze ein leeres Modell, um die Tabelle zu leeren
+			            var oEmptyModel = new sap.ui.model.json.JSONModel([]);
+			            this.getView().setModel(oEmptyModel, "StockModel");
+		                sap.m.MessageToast.show("Keine Materialien vorhanden");
+		            }
+                }.bind(this),
+                error: function () {
+                    MessageToast.show("Keine Materialien für die Selektion gepflegt.");
+                }
+            });
+        },
+        
+        navToDetail: function (oEvent) {
+            // Get the selected context (the clicked row)
+            var oSelectedItem = oEvent.getSource();
+            var oContext = oSelectedItem.getBindingContext("StockModel");
+
+            // Get the Material Number (Matnr) from the context
+            var oMatnr = oContext.getProperty("Matnr");
+            var oWerks = oContext.getProperty("Werks");
+            var oLgort= oContext.getProperty("Lgort");
+
+            // Navigate to the detail route (assuming you have set up the routing correctly)
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            
+            oRouter.navTo("materialDetails", {
+            	path: "materialDetails('" + oMatnr + "')",
+                matnr: oMatnr,
+                lgort: oLgort,
+                werks: oWerks
+                
+            });
         }
     });
 });
