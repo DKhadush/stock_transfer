@@ -131,6 +131,13 @@
 				"target": ["materialDetails"]
 			},
 			{
+				"name": "bestand",
+				"pattern": "bestand/{lgort}/{werks}",
+				"titleTarget": "",
+				"greedy": false,
+				"target": ["bestand"]
+			},
+			{
 				"name": "addMaterial",
 				"pattern": "/addMaterial/{matnr}/{lgort}/{werks}/{meins}/{labst}/{maktx}",
 				"titleTarget": "",
@@ -150,6 +157,12 @@
 					"transition": "slide",
 					"clearAggregation": true,
 					"viewName": "materialDetails"
+				},
+				"bestand": {
+					"viewType": "XML",
+					"transition": "slide",
+					"clearAggregation": true,
+					"viewName": "bestand"
 				},
 				"materialTransfer": {
 					"viewType": "XML",

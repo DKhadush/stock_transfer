@@ -6,22 +6,22 @@
 		xmlns:html="http://www.w3.org/1999/xhtml"
 		xmlns:smartTable="sap.ui.comp.smarttable" 
 		xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-    <App id="GR_App">
-        <Page title="{i18n>appTitle}" showNavButton="true">
+        <Page showNavButton="true">
             <content>
+            	<VBox alignItems="Center">
             	<HBox>
             		<!-- Werk Auswahl -->
             		<VBox id="werksComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>plant}" />
-	                    <ComboBox id="werksComboBox" placeholder="{i18n>selectPlant}" selectionChange=".onPlantSelectionChange" items="{Werks>/}">
+	                    <Label text="{i18n>sourcePlant}" />
+	                    <ComboBox id="werksComboBox" value="{globalModel>/Werks}" placeholder="{i18n>selectPlant}" selectionChange=".onPlantSelectionChange" items="{Werks>/}">
 	                        <core:Item key="{Werks>Werks}" text="{Werks>Werks} {Werks>Name1}" />
 	                    </ComboBox>
                 	</VBox>
 	                
 	                <!-- Nach Werk Auswahl -->
 	                <VBox id="zwerksComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>destplant}" />
-	                    <ComboBox id="zwerksComboBox" placeholder="{i18n>selectPlant}" selectionChange=".onDestPlantSelectionChange" items="{Werks>/}">
+	                    <Label text="{i18n>destPlant}" />
+	                    <ComboBox id="zwerksComboBox" value="{globalModel>/zielWerks}" placeholder="{i18n>selectPlant}" selectionChange=".onDestPlantSelectionChange" items="{Werks>/}">
 	                        <core:Item key="{Werks>Werks}" text="{Werks>Werks} {Werks>Name1}" />
 	                    </ComboBox>
 	                </VBox>
@@ -29,29 +29,80 @@
                 <HBox>
                 	<!-- Lagerort Auswahl -->
 	                <VBox id="lgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>storageLocation}" />
-	                    <ComboBox id="lgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
-	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />
-	                    </ComboBox>
+	                    <Label text="{i18n>sourceStorageLocation}" />
+	                	<Input
+						    id="lgortInput"
+						    value="{globalModel>/Lgort}"
+						    placeholder="{i18n>selectStorageLocation}"
+						    showValueHelp="true"
+						    valueHelpRequest=".onValueHelpRequestLgort"
+						    showSuggestion="true"
+						    selectionChange=".onStorageLocationChange"
+						    suggest=".onSuggestLgort"
+						    suggestionItems="{
+						        path: 'Lgort>/Lagerorte',
+						        length: 4
+						    }">
+						    <suggestionColumns>
+						        <Column>
+						            <Label text="{i18n>storageLocation}" />
+						        </Column>
+						        <Column>
+						            <Label text="{i18n>description}" />
+						        </Column>
+						    </suggestionColumns>
+						    <suggestionItems>
+						        <ColumnListItem>
+						            <Label text="{Lgort>Lgort}" />
+						            <Label text="{Lgort>Lgobe}" />
+						        </ColumnListItem>
+						    </suggestionItems>
+						</Input>
                 	</VBox>
-                
+                	
+
                 	<!-- Ziellagerort Auswahl -->
-	                <VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>deststorageLocation}" />
-	                    <ComboBox id="zlgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
-	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />          
-	                    </ComboBox>
+                	<VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
+	                    <Label text="{i18n>destStorageLocation}" />
+	                    <Input
+						    id="zlgortInput"
+						    value="{globalModel>/zielLgort}"
+						    placeholder="{i18n>selectStorageLocation}"
+						    showValueHelp="true"
+						    valueHelpRequest=".onValueHelpRequestLgort"
+						    showSuggestion="true"
+						    suggest=".onSuggestLgort"
+						    liveChange="onStorageLocationChange"
+						    suggestionItems="{
+						        path: 'DLgort>/Lagerorte',
+						        length: 4
+						    }">
+						    <suggestionColumns>
+						        <Column>
+						            <Label text="{i18n>storageLocation}" />
+						        </Column>
+						        <Column>
+						            <Label text="{i18n>description}" />
+						        </Column>
+						    </suggestionColumns>
+						    <suggestionItems>
+						        <ColumnListItem>
+						            <Label text="{DLgort>Lgort}" />
+						            <Label text="{DLgort>Lgobe}" />
+						        </ColumnListItem>
+						    </suggestionItems>
+						</Input>
+
 	                </VBox>
-                </HBox>
+	                </HBox>
+	            </VBox>
             </content>
             <footer>
-					<Bar class="sapContrast sapContrastPlus">
-						<contentRight>
-							<Button id="btnStock" text="{i18n>loadingMaterials}" class="sapUiLargeMargins" icon="sap-icon://save" type="Accept" data:id="bookingDialog"
-								press="navToBestand" visible="false"/>
-						</contentRight>
-					</Bar>
-				</footer>
+				<Bar>
+					<contentRight>
+						<Button id="btnStock" text="{i18n>loadingMaterials}" press="navToBestand" enabled="false" icon="sap-icon://save" type="Accept" />
+					</contentRight>
+				</Bar>
+			</footer>
         </Page>
-    </App>
 </mvc:View>

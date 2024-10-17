@@ -1,6 +1,9 @@
-<mvc:View xmlns:core="sap.ui.core" xmlns:mvc="sap.ui.core.mvc" xmlns="sap.m" xmlns:html="http://www.w3.org/1999/xhtml"
-	xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
-	controllerName="com.mindsquare.stock.transfer.controller.materialDetails">
+<mvc:View xmlns:core="sap.ui.core" 
+		xmlns:mvc="sap.ui.core.mvc" 
+		xmlns="sap.m" 
+		xmlns:html="http://www.w3.org/1999/xhtml"
+		xmlns:data="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1"
+		controllerName="com.mindsquare.stock.transfer.controller.materialDetails">
 	<Page showNavButton="true" title="{i18n>matDetails}">
 		
 		<customHeader>

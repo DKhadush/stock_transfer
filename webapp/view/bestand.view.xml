@@ -1,118 +1,130 @@
-<mvc:View controllerName="com.mindsquare.stock.transfer.controller.werkauswahl" xmlns:mvc="sap.ui.core.mvc" displayBlock="true"
-	xmlns="sap.m" xmlns:core="sap.ui.core" xmlns:smartTable="sap.ui.comp.smarttable" xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
-    <App id="GR_App">
-        <Page title="{i18n>appTitle}" showNavButton="true">
-            <content>
-            	<HBox>
-            		<!-- Werk Auswahl -->
-            		<VBox id="werksComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>plant}" />
-	                    <ComboBox id="werksComboBox" placeholder="{i18n>selectPlant}" selectionChange=".onPlantSelectionChange" items="{Werks>/}">
-	                        <core:Item key="{Werks>Werks}" text="{Werks>Werks} {Werks>Name1}" />
-	                    </ComboBox>
-                	</VBox>
-	                
-	                <!-- Zielwerk Auswahl -->
-	                <VBox id="zwerksComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
-	                    <Label text="{i18n>destplant}" />
-	                    <ComboBox id="zwerksComboBox" placeholder="{i18n>selectPlant}" selectionChange=".onDestPlantSelectionChange" items="{Werks>/}">
-	                        <core:Item key="{Werks>Werks}" text="{Werks>Werks} {Werks>Name1}" />
-	                    </ComboBox>
-	                </VBox>
-            	</HBox>
-                <HBox>
-                	<!-- Lagerort Auswahl (initial unsichtbar) -->
-	                <VBox id="lgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin" visible="false">
-	                    <Label text="{i18n>storageLocation}" />
-	                    <ComboBox id="lgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
-	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />
-	                    </ComboBox>
-                	</VBox>
-                
-                	<!-- Ziellagerort Auswahl (initial unsichtbar) -->
-	                <VBox id="zlgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin" visible="false">
-	                    <Label text="{i18n>deststorageLocation}" />
-	                    <ComboBox id="zlgortComboBox" placeholder="{i18n>selectStorageLocation}" selectionChange=".onStorageLocationChange" items="{Lgort>/}">
-	                        <core:Item key="{Lgort>Lgort}" text="{Lgort>Lgort} {Lgort>Lgobe}" />          
-	                    </ComboBox>
-	                </VBox>
-                </HBox>
-                
-                
-                
-				 <smartTable:SmartTable id="stockTable" 
-										 tableType="ResponsiveTable" 
-										 entitySet="stockItemSet" 
-						                 visible="false" 
-						                 header="{i18n>appTitle}" 
-						                 showRowCount="true" 
-						                 useExportToExcel="true" 
-    									 enableAutoBinding="false" 
-    									 useVariantManagement="true" 
-    									 showVariantManagement="true"
-    									 useTablePersonalisation="true" 
-    									 showFullScreenButton="true" 
-    									 initiallyVisibleFields="Matnr,Maktx" 
-    									 requestAtLeastFields="Matnr,Werks,Lgort,Maktx,Labst" 
-    									 xmlns:smartTable="sap.ui.comp.smarttable"
-    									 class="sapUiSmallMargin">
-                    <Table noDataText="{i18n>noData}" items="{StockModel>/}" width="auto" sticky="ColumnHeaders" 
-        				mode="None" growing="true" growingScrollToLoad="true" growingThreshold="20">
-                    	<columns>
-                        	<Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Matnr", "leadingProperty": "Matnr", "sortProperty": "Matnr", "filterProperty": "Matnr", "columnIndex": "1", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>material}" />
-				            </Column>
-				            
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Maktx", "leadingProperty": "Maktx", "sortProperty": "Maktx", "filterProperty": "Maktx", "columnIndex": "2", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>description}" />
-				            </Column>
-				            
-				            <!--Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Labst", "leadingProperty": "Labst", "sortProperty": "Labst", "filterProperty": "Labst", "columnIndex": "3", "visible": true}'/>
-				                </customData>
-				                <Text text="{i18n>quantity}" />
-				            </Column>
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Werks", "leadingProperty": "Werks", "sortProperty": "Werks", "filterProperty": "Werks", "columnIndex": "4", "visible": false}'/>
-				                </customData>
-				                <Text text="{i18n>plant}" />
-				            </Column>
-				            <Column>
-				                <customData>
-				                    <core:CustomData key="p13nData"
-				                        value='{"columnKey": "Lgort", "leadingProperty": "Lgort", "sortProperty": "Lgort", "filterProperty": "Lgort", "columnIndex": "5", "visible": false}'/>
-				                </customData>
-				                <Text text="{i18n>storageLocation}" />
-				            </Column-->
-					    </columns>
-	                    <items>
-						    <ColumnListItem  type="Navigation" press="navToDetail">
-						        <cells>
-						            <Text text="{StockModel>Matnr}" />	
-						            <Text text="{StockModel>Maktx}" />
-						            <Text text="{StockModel>Labst}" />
-						            <Text text="{StockModel>Werks}" />
-						            <Text text="{StockModel>Lgort}" />
-						        </cells>
-						    </ColumnListItem>
-						</items>
-                    </Table>
-                
-                </smartTable:SmartTable>
+<mvc:View controllerName="com.mindsquare.stock.transfer.controller.bestand"
+		xmlns:mvc="sap.ui.core.mvc" 
+		displayBlock="true"
+		xmlns="sap.m" 
+		xmlns:core="sap.ui.core" 
+		xmlns:smartTable="sap.ui.comp.smarttable" 
+		xmlns:customData="http://schemas.sap.com/sapui5/extension/sap.ui.core.CustomData/1">
+
+    <Page showNavButton="true" navButtonPress="onNavBack">
+        <content>
+        	<IconTabBar id="idStockTabBar" class="sapUiResponsiveContentPadding" select="onIconTabPress">
+				<items>
+					<!-- Tab für Freien Bestand -->
+				   <!-- Tab für Freien Bestand -->
+			        <IconTabFilter icon="sap-icon://inventory" key="FreeStock">
+			           <smartTable:SmartTable id="stockTable" 
+												 tableType="ResponsiveTable" 
+												 entitySet="stockItemSet" 
+								                 visible="true" 
+								                 header="{i18n>matDetails} für Werk {globalModel>/Werks} und Lagerort {globalModel>/Lgort} " 
+								                 showRowCount="true" 
+								                 useExportToExcel="true" 
+												 enableAutoBinding="false" 
+												 useVariantManagement="true" 
+												 showVariantManagement="true"
+												 useTablePersonalisation="true" 
+												 showFullScreenButton="true" 
+												 initiallyVisibleFields="Matnr,Maktx" 
+												 requestAtLeastFields="Matnr,Werks,Lgort,Maktx,Labst" 
+												 xmlns:smartTable="sap.ui.comp.smarttable"
+												 class="sapUiSmallMargin">
+			                <Table noDataText="{i18n>noData}" items="{StockModel>/}" width="auto" sticky="ColumnHeaders" 
+			    				mode="None" growing="true" growingScrollToLoad="true" growingThreshold="20">
+			                	<columns>
+			                    	<Column>
+						                <customData>
+						                    <core:CustomData key="p13nData"
+						                        value='{"columnKey": "Matnr", "leadingProperty": "Matnr", "sortProperty": "Matnr", "filterProperty": "Matnr", "columnIndex": "1", "visible": true}'/>
+						                </customData>
+						                <Text text="{i18n>material}" />
+						            </Column>
+						            
+						            <Column>
+						                <customData>
+						                    <core:CustomData key="p13nData"
+						                        value='{"columnKey": "Maktx", "leadingProperty": "Maktx", "sortProperty": "Maktx", "filterProperty": "Maktx", "columnIndex": "2", "visible": true}'/>
+						                </customData>
+						                <Text text="{i18n>description}" />
+						            </Column>
+						            
+						            <!--Column>
+						                <customData>
+						                    <core:CustomData key="p13nData"
+						                        value='{"columnKey": "Labst", "leadingProperty": "Labst", "sortProperty": "Labst", "filterProperty": "Labst", "columnIndex": "3", "visible": true}'/>
+						                </customData>
+						                <Text text="{i18n>quantity}" />
+						            </Column>
+						            <Column>
+						                <customData>
+						                    <core:CustomData key="p13nData"
+						                        value='{"columnKey": "Werks", "leadingProperty": "Werks", "sortProperty": "Werks", "filterProperty": "Werks", "columnIndex": "4", "visible": false}'/>
+						                </customData>
+						                <Text text="{i18n>plant}" />
+						            </Column>
+						            <Column>
+						                <customData>
+						                    <core:CustomData key="p13nData"
+						                        value='{"columnKey": "Lgort", "leadingProperty": "Lgort", "sortProperty": "Lgort", "filterProperty": "Lgort", "columnIndex": "5", "visible": false}'/>
+						                </customData>
+						                <Text text="{i18n>storageLocation}" />
+						            </Column-->
+							    </columns>
+			                    <items>
+								    <ColumnListItem type="Active" press="onMaterialPressEvent">
+								        <cells>
+								            <Text text="{StockModel>Matnr}" />	
+								            <Text text="{StockModel>Maktx}" />
+								            <Text text="{StockModel>Labst}" />
+								            <Text text="{StockModel>Werks}" />
+								            <Text text="{StockModel>Lgort}" />
+								        </cells>
+								    </ColumnListItem>
+								</items>
+			                </Table>
+			            
+			            </smartTable:SmartTable>
+	
+			        </IconTabFilter>
+			        
+			        <IconTabFilter id="basket" key="Basket" icon="sap-icon://cart" count="{materialList>/materials.length}">
+						<List id="basketList" noDataText="{i18n>noMaterialList}" items="{materialList>/materials}" updateFinished="onUpdateFinished">
+							<items>
+								<ObjectListItem title="{materialList>Matnr}" type="Active" press="onMaterialListItemPress" number="{materialList>Menge}"
+									numberUnit="{materialList>Ausme}">
+									<attributes>
+										<ObjectAttribute text="{materialList>Lgort} | {materialList>Lgpbe}" visible="{= ${materialList>Lgpbe} ? true : false }"/>
+										<ObjectAttribute text="{materialList>Lgort}" visible="{= ${materialList>Lgpbe} ? false : true }"/>
+										<ObjectAttribute text="{materialList>Maktx}"/>
+										<!--	<ObjectAttribute text="{ path: 'materialList>Bdter', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd.MM.yy', displayFormat: 'Date', UTC:true } }"/>-->
+									</attributes>
+								</ObjectListItem>
+							</items>
+						</List>
+					</IconTabFilter>
+				
+			        <!-- Tab für Gesperrten Bestand>
+			        <IconTabFilter icon="sap-icon://locked" key="BlockedStock" text="{i18n>blockedStock}">
+			            <List id="blockedStockList" items="{path: 'StockModel>/BlockedStockSet'}">
+			                <StandardListItem
+			                    title="{StockModel>Matnr}"
+			                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Sperrbestand} {StockModel>Meins}"
+			                    info="{StockModel>Maktx}" />
+			            </List>
+			        </IconTabFilter>
+			
+			        <Tab für Qualitätsprüfbestand>
+			        <IconTabFilter icon="sap-icon://quality-issue" key="QualityStock" text="{i18n>qualityStock}">
+			            <List id="qualityStockList" items="{path: 'StockModel>/QualityStockSet'}">
+			                <StandardListItem
+			                    title="{StockModel>Matnr}"
+			                    description="{StockModel>Werks} | {StockModel>Lgort} | {StockModel>Qmbestand} {StockModel>Meins}"
+			                    info="{StockModel>Maktx}" />
+			            </List>
+			        </IconTabFilter-->
+			      </items>
+			</IconTabBar>
 		
-            </content>
-        </Page>
-    </App>
+        </content>
+    </Page>
 </mvc:View>

@@ -3,12 +3,17 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/m/MessageToast",
-    "sap/ui/model/json/JSONModel"
-], function (baseController, Filter, FilterOperator, MessageToast, JSONModel) {
+    "sap/ui/model/json/JSONModel",
+    "sap/m/Button",
+	"sap/m/Dialog",
+	"sap/m/Text",
+	"sap/ui/model/Sorter",
+	"../model/formatter",
+	"sap/m/MessageBox"
+], function (baseController, Filter, FilterOperator, MessageToast, JSONModel, Button, formatter, Dialog, Text) {
     "use strict";
 
     return baseController.extend("com.mindsquare.stock.transfer.controller.werkauswahl", {
-
         onInit: function () {
         	// Erstelle ein globales Modell
             var oData = {
@@ -17,6 +22,12 @@ sap.ui.define([
                 zielLgort: "",
                 Lgort: ""
             };
+            
+            var oButton = this.byId("btnStock");
+		    if (oButton) {
+		        oButton.setVisible(true);  
+		        oButton.setEnabled(false); 
+		    }
             
             var oGlobalModel = new JSONModel(oData);
             this.getOwnerComponent().setModel(oGlobalModel, "globalModel");
@@ -48,86 +59,173 @@ sap.ui.define([
         },
         
         // Wird aufgerufen, wenn ein Werk im Dropdown ausgewählt wird
+       
+        // Wird aufgerufen, wenn ein Werk im Dropdown ausgewählt wird
         onPlantSelectionChange: function (oEvent) {
             var sSelectedPlant = oEvent.getSource().getSelectedKey();
 			var oModel = this.getOwnerComponent().getModel("globalModel");
-			oModel.setProperty("/Werks", sSelectedPlant);  
+			console.log(oModel.getProperty("/Werks"));
+			var oButton = this.byId("btnStock");
             if (sSelectedPlant) {
                 // Lagerorte für das ausgewählte Werk laden
-                this._loadStorageLocations(sSelectedPlant);
+                this._loadStorageLocations(sSelectedPlant, false);
 				// Setze ein leeres Modell, um die Tabelle zu leeren
 			    var oEmptyModel = new sap.ui.model.json.JSONModel([]);
 			    this.getView().setModel(oEmptyModel, "StockModel");
-                // Lagerort-Dropdown sichtbar machen
-                this.byId("lgortComboBox").setSelectedKey(null);
-                this.byId("lgortComboVBox").setVisible(true);
-                this.byId("stockTable").setVisible(false);
-                
+                  // Lagerort-Dropdown sichtbar machen
+                this.byId("lgortInput").setValue("");
+                this.byId("lgortInput").setShowValueHelp(true);
+                if (oButton) {
+				    oButton.setEnabled(false); 
+				}
             } else {
-                // Lagerort-Dropdown ausblenden, wenn kein Werk ausgewählt ist
-                this.byId("lgortComboVBox").setVisible(false);
-                this.byId("stockTable").setVisible(false);
             }
         },
-        
+
         onDestPlantSelectionChange: function (oEvent) {
-            var sSelectedPlant = oEvent.getSource().getSelectedKey();
+            var sDestSelectedPlant = oEvent.getSource().getSelectedKey();
 			var sSelectedDestPlant = this.byId("zwerksComboBox").getSelectedKey();
-			
-			var oModel = this.getOwnerComponent().getModel("globalModel");
-			oModel.setProperty("/zielWerks", sSelectedDestPlant); 
-            if (sSelectedPlant) {
+			var oButton = this.byId("btnStock");
+            if (sDestSelectedPlant) {
                 // Lagerorte für das ausgewählte Werk laden
-                this._loadStorageLocations(sSelectedPlant);
+                this._loadStorageLocations(sDestSelectedPlant, true);
                 // Lagerort-Dropdown sichtbar machen
-                this.byId("zlgortComboBox").setSelectedKey(null);
-                this.byId("zlgortComboVBox").setVisible(true);
-                this.byId("stockTable").setVisible(false);
+                this.byId("zlgortInput").setValue("");
+                this.byId("zlgortInput").setShowValueHelp(true);
+                if (oButton) {
+				    oButton.setEnabled(false); 
+				}
                 
             } else {
-                // Lagerort-Dropdown ausblenden, wenn kein Werk ausgewählt ist
-                this.byId("zlgortComboVBox").setVisible(false);
-                this.byId("stockTable").setVisible(false);
             }
         },
 
-        _loadStorageLocations: function (sPlant) {
+        _loadStorageLocations: function (sPlant, bDestLgort) {
             var oModel = this.getView().getModel();
-
+			var sModelName = bDestLgort ? "DLgort" : "Lgort";
             // Filtere die Lagerorte basierend auf dem ausgewählten Werk
             var aFilters = [new Filter("Werks", FilterOperator.EQ, sPlant)];
 
             oModel.read("/lgortItemSet", {
                 filters: aFilters,
                 success: function (oData) {
-                    var oStorageLocModel = new sap.ui.model.json.JSONModel(oData.results);
-                    this.getView().setModel(oStorageLocModel, "Lgort");
+                    var oStorageLocModel = new sap.ui.model.json.JSONModel({ Lagerorte: oData.results });
+                    this.getView().setModel(oStorageLocModel, sModelName);
                 }.bind(this),
                 error: function () {
                     MessageToast.show("Fehler beim Laden der Lagerorte.");
                 }
             });
-        }, 
-        
+        },
+		
         onStorageLocationChange: function () {
-            var sSelectedStorageLoc = this.byId("lgortComboBox").getSelectedKey();
-            var sSelectedPlant = this.byId("werksComboBox").getSelectedKey();
-            var sSelectedDestStorageLoc = this.byId("zlgortComboBox").getSelectedKey();
-			var sSelectedDestPlant = this.byId("zwerksComboBox").getSelectedKey();
-			
-			var oModel = this.getOwnerComponent().getModel("globalModel");
-			oModel.setProperty("/Lgort", sSelectedStorageLoc);   
-			oModel.setProperty("/zielLgort", sSelectedDestStorageLoc);  
-			
-            if (sSelectedDestPlant && sSelectedPlant && sSelectedStorageLoc && sSelectedDestStorageLoc) {
-        		// Bestände laden und manuell binden
-	            this._loadStock(sSelectedPlant, sSelectedStorageLoc);
-                // Zeige die Tabelle an
-                this.byId("stockTable").setVisible(true);
-            } 
-            else {
-        		oSmartTable.setVisible(false);
-    		}
+		    var sValue = this.byId("lgortInput").getValue();  
+		    var sDValue = this.byId("zlgortInput").getValue();  
+		    if (sValue.length === 4 && sDValue.length === 4) {
+		        var sSelectedPlant = this.byId("werksComboBox").getSelectedKey();
+		        var sSelectedDestPlant = this.byId("zwerksComboBox").getSelectedKey();
+		        
+		        var oButton = this.byId("btnStock");
+		        if (oButton) {
+		            oButton.setEnabled(true); 
+		        }
+		    } else {
+		        var oButton = this.byId("btnStock");
+		        if (oButton) {
+		            oButton.setEnabled(false); 
+		        }
+		    }
+		},
+
+        onSuggestLgort: function (oEvent) {
+		    var sTerm = oEvent.getParameter("suggestValue");  // Der eingegebene Wert
+		    var aFilters = [];
+			var sId = oEvent.getSource().getId() === "zlgortInput" ? "DLgort" : "Lgort"
+		    if (sTerm) {
+		        // Filtere basierend auf dem eingegebenen Begriff
+		        aFilters.push(new sap.ui.model.Filter({
+		            path: "Lgort",   // Lagerort wird gefiltert
+		            operator: sap.ui.model.FilterOperator.Contains,
+		            value1: sTerm
+		        }));
+		        aFilters.push(new sap.ui.model.Filter({
+		            path: "Description",  // Beschreibung wird auch gefiltert
+		            operator: sap.ui.model.FilterOperator.Contains,
+		            value1: sTerm
+		        }));
+		    }
+		
+		    var oBinding = oEvent.getSource().getBinding("suggestionItems");
+		    oBinding.filter(aFilters);
+		},
+
+		
+		onValueHelpRequestLgort: function (oEvent) {
+		    // Ermitteln der ID des auslösenden Elements
+		    var sID = oEvent.getSource().getId();
+		    var sLgort = (sID === this.getView().byId("zlgortInput").getId()) ? "DLgort" : "Lgort";
+		    var sIDinput = (sID === this.getView().byId("zlgortInput").getId()) ? "zlgortInput" : "lgortInput";
+		    console.log(sLgort);
+		    // Modell für Lagerorte abrufen
+		    var oModel = this.getView().getModel(sLgort); 
+		    console.log(oModel);
+		    if (oModel) {
+			    // Dialog für die Lagerorte-Auswahl erstellen, falls er noch nicht existiert
+			        this._oLgortValueHelpDialog = new sap.m.SelectDialog({
+		            title: "Lagerort auswählen",
+		            items: {
+		                path: sLgort + ">/Lagerorte",
+		                template: new sap.m.StandardListItem({
+		                    title: "{" + sLgort + ">Lgort}",
+		                    info: "{" + sLgort + ">Lgobe}"
+		                })
+		            },
+		            confirm: function (oConfirmEvent) {
+		                var oSelectedItem = oConfirmEvent.getParameter("selectedItem");
+		                if (oSelectedItem) {
+		                    var sKey = oSelectedItem.getTitle();
+		                    console.log(sKey);
+		                    this.getView().byId(sIDinput).setValue(sKey);
+		                    this.onStorageLocationChange();
+		                }
+		            }.bind(this),
+		            search: function (oSearchEvent) {
+		                var sValue = oSearchEvent.getParameter("value");
+		                var oFilter = new sap.ui.model.Filter({
+		                    path: sLgort + ">Lgort",
+		                    operator: sap.ui.model.FilterOperator.Contains,
+		                    value1: sValue
+		                });
+		                oSearchEvent.getSource().getBinding("items").filter([oFilter]);
+		            }
+		        });
+		
+		        // Dialog als abhängiges Element hinzufügen
+		        this.getView().addDependent(this._oLgortValueHelpDialog);
+			    // Setze das Modell für den Dialog und öffne ihn
+			    this._oLgortValueHelpDialog.setModel(oModel, sLgort);
+			    this._oLgortValueHelpDialog.open();
+		    }
+		},
+
+        navToBestand: function (oEvent) {
+             // Zugriff auf das globale Modell
+		    var oModel = this.getOwnerComponent().getModel("globalModel");
+		    
+		    // Werks und Lagerort aus dem Modell abrufen
+		    var oWerks = oModel.getProperty("/Werks");
+		    var oLgort = oModel.getProperty("/Lgort");
+
+            // Navigate to the detail route (assuming you have set up the routing correctly)
+            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+            
+            oRouter.navTo("bestand", {
+            	path: "bestands('" + oWerks + oLgort + "')",
+                lgort: oLgort,
+                werks: oWerks
+                
+            });
         }
+
     });
 });
