@@ -3,8 +3,10 @@ sap.ui.define([
     "sap/ui/model/Filter",
     "sap/ui/model/FilterOperator",
     "sap/m/MessageToast",
+    
+	"sap/ui/core/Fragment",
     "sap/ui/model/json/JSONModel"
-], function (baseController, Filter, FilterOperator, MessageToast, JSONModel) {
+], function (baseController, Filter, FilterOperator, MessageToast, JSONModel, Fragment) {
     "use strict";
 
     return baseController.extend("com.mindsquare.stock.transfer.controller.bestand", {
@@ -51,14 +53,16 @@ sap.ui.define([
                 }
             });
         },
-        onMaterialPressEvent: function (oEvent) {
+       onMaterialPressEvent: function (oEvent) {
 		    var oView = this.getView();
 		    
 		    // Get the selected item and its BindingContext
 		    var oSelectedItem = oEvent.getSource();
 		    var oContext = oSelectedItem.getBindingContext("StockModel");
-		    console.log(this.getView().getModel("StockModel"));
-
+		
+		    // Extract the exact path (index) of the selected material
+		    var sPath = oContext.getPath();  // This gives you something like "/0" or "/1", etc.
+		
 		    // Check if the dialog already exists
 		    if (!this.oDialog) {
 		        // Load the fragment and assign it to the oDialog property
@@ -68,32 +72,49 @@ sap.ui.define([
 		        oView.addDependent(this.oDialog);
 		    }
 		
-		    // Explicitly set the StockModel for the dialog (in case it was not automatically available)
-		    this.oDialog.setModel(this.getView().getModel("StockModel"), "StockModel");
-			console.log(this.getView().getModel("StockModel"));
-
-		    // Bind the dialog to the selected item's context (to ensure it has the correct data)
+		    // Bind the dialog to the selected item's context, passing the exact path
 		    this.oDialog.bindElement({
-		        path: oContext.getPath(),  // Bind to the path of the selected item
-		        model: "StockModel"        // Use the "StockModel" model
+		        path: sPath,  // Binds the dialog to the exact selected material based on the path
+		        model: "StockModel"
 		    });
-		    
+		
 		    // Open the dialog
 		    this.oDialog.open();
 		},
+		
+		       
+		       onBtnCancelPress: function () {
+		            this.oDialog.close();
+		        },
+				onBtnSubmitPress: function () {
+		    var oView = this.getView();
+		
+		    // Erstellen des Fragments, falls noch nicht vorhanden
+		    if (!this.oDialog) {
+		        this.oDialog = sap.ui.xmlfragment("com.mindsquare.stock.transfer.view.fragments.addMaterial", this);
+		        oView.addDependent(this.oDialog);
+		    }
+		
+		    // Zugriff auf das Eingabefeld für Menge
+		    var inputQuantity = sap.ui.core.Fragment.byId("com.mindsquare.stock.transfer.view.fragments.addMaterial", "iMenge");
+			console.log(1);
+		    if (!inputQuantity) {
+		        sap.m.MessageBox.error("Das Eingabefeld für die Menge wurde nicht gefunden.");
+		        return;
+		    }
+		
+		    // Hole den Wert des Eingabefelds
+		    var quantityValue = inputQuantity.getValue();
+		
+		    // Validierung der eingegebenen Menge
+		    if (isNaN(quantityValue) || quantityValue <= 0) {
+		        sap.m.MessageBox.error("Bitte geben Sie eine gültige Menge ein.");
+		        return;
+		    }
+		
+		    // Weitere Logik wie in deinem bestehenden Code...
+		},
 
-        onBtnCancelPress: function () {
-            this.byId("addMaterialDialog").close();
-        },
-
-        onBtnSubmitPress: function () {
-            // Hier kannst du die Logik für das Hinzufügen des Materials implementieren
-            // ...
-
-            // Dialog schließen
-            this.byId("addMaterialDialog").close();
-        },
-        
         onNavBack: function() {
 		    var oHistory = sap.ui.core.routing.History.getInstance();
 		    var sPreviousHash = oHistory.getPreviousHash();

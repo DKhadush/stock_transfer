@@ -30,31 +30,29 @@
                 	<!-- Lagerort Auswahl -->
 	                <VBox id="lgortComboVBox" layoutData="sap.m.FlexItemData" class="sapUiSmallMargin">
 	                    <Label text="{i18n>sourceStorageLocation}" />
-	                	<Input
+	                    <Input
 						    id="lgortInput"
 						    value="{globalModel>/Lgort}"
 						    placeholder="{i18n>selectStorageLocation}"
 						    showValueHelp="true"
 						    valueHelpRequest=".onValueHelpRequestLgort"
 						    showSuggestion="true"
+						    suggest=".onSuggestLgort"      
+						    filterSuggests="true"          
 						    selectionChange=".onStorageLocationChange"
-						    suggest=".onSuggestLgort"
 						    suggestionItems="{
 						        path: 'Lgort>/Lagerorte',
+						        templateShareable: 'false',
 						        length: 4
 						    }">
 						    <suggestionColumns>
 						        <Column>
 						            <Label text="{i18n>storageLocation}" />
 						        </Column>
-						        <Column>
-						            <Label text="{i18n>description}" />
-						        </Column>
 						    </suggestionColumns>
 						    <suggestionItems>
 						        <ColumnListItem>
 						            <Label text="{Lgort>Lgort}" />
-						            <Label text="{Lgort>Lgobe}" />
 						        </ColumnListItem>
 						    </suggestionItems>
 						</Input>
