@@ -47,7 +47,7 @@
 
                                             <!-- Eingabefeld für Menge -->
                                             <Label text="{i18n>enterQuantity}" />
-                                            <Input id="iMenge" value="{path: "{StockModel>iMenge}", type: 'sap.ui.model.type.Float', formatOptions: { showMeasure: true }}" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
+                                            <Input id="iMenge" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
                                         </FlexBox>
                                     </f:content>
                                 </f:SimpleForm>
