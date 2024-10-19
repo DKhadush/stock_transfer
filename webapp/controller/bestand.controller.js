@@ -271,6 +271,7 @@ sap.ui.define([
 
 
         onUpdateFinished: function () {
+        	console.log(1);
             var oModel = this.getView().getModel("materialList");
             var aMaterials = oModel.getProperty("/materials");
             this.getView().byId("basket").setCount(aMaterials.length);
