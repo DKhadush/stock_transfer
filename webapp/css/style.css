@@ -18,3 +18,7 @@ button {
 .boldText {
 	font-weight: bold;
 }
+.blassStyle {
+    opacity: 0.5;  /* Reduziert die Sichtbarkeit */
+    pointer-events: none;  /* Verhindert Interaktionen */
+}

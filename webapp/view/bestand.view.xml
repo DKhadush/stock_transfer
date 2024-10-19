@@ -29,7 +29,7 @@
 												 requestAtLeastFields="Matnr,Werks,Lgort,Maktx,Labst" 
 												 xmlns:smartTable="sap.ui.comp.smarttable"
 												 class="sapUiSmallMargin">
-			                <Table noDataText="{i18n>noData}" items="{StockModel>/}" width="auto" sticky="ColumnHeaders" 
+			                <Table noDataText="{i18n>noData}" items="{StockModel>/}" class="{= ${StockModel>isBlass} ? 'blassStyle' : '' }" width="auto" sticky="ColumnHeaders" 
 			    				mode="None" growing="true" growingScrollToLoad="true" growingThreshold="20">
 			                	<columns>
 			                    	<Column>
@@ -90,11 +90,9 @@
 			        <IconTabFilter id="basket" key="Basket" icon="sap-icon://cart" count="{materialList>/materials.length}">
 						<List id="basketList" noDataText="{i18n>noMaterialList}" items="{materialList>/materials}" updateFinished="onUpdateFinished">
 							<items>
-								<ObjectListItem title="{materialList>Matnr}" type="Active" press="onMaterialListItemPress" number="{materialList>Menge}"
-									numberUnit="{materialList>Ausme}">
+								<ObjectListItem title="{materialList>Matnr}" type="Active" press="onMaterialListItemPress" number="{materialList>bMenge}"
+									numberUnit="{materialList>Meins}">
 									<attributes>
-										<ObjectAttribute text="{materialList>Lgort} | {materialList>Lgpbe}" visible="{= ${materialList>Lgpbe} ? true : false }"/>
-										<ObjectAttribute text="{materialList>Lgort}" visible="{= ${materialList>Lgpbe} ? false : true }"/>
 										<ObjectAttribute text="{materialList>Maktx}"/>
 										<!--	<ObjectAttribute text="{ path: 'materialList>Bdter', type: 'sap.ui.model.type.DateTime', formatOptions: { pattern: 'dd.MM.yy', displayFormat: 'Date', UTC:true } }"/>-->
 									</attributes>

@@ -43,11 +43,15 @@
                                                     <Label text="{i18n>freeGoods}"/>
                                                     <Input value="{StockModel>Labst} {StockModel>Meins}" editable="false"/>
                                                 </FlexBox>
+                                                <FlexBox direction="Column" class="sapUiTinyMarginEnd">
+                                                    <Label text="{i18n>basketGoods}"/>
+                                                    <Input value="{StockModel>bMenge}" editable="false"/>
+                                                </FlexBox>
                                             </FlexBox>
 
                                             <!-- Eingabefeld für Menge -->
                                             <Label text="{i18n>enterQuantity}" />
-                                            <Input id="iMenge" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
+                                            <Input id="iMenge" value="0" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
                                         </FlexBox>
                                     </f:content>
                                 </f:SimpleForm>
