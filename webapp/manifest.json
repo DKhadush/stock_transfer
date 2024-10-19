@@ -82,7 +82,7 @@
 				"dataSource": "ZMDE_MM_STOCK_TRANSFER_SRV",
 				"preload": true
 			}, 
-			"materialTransfer": {
+			"materialList": {
 				"type": "sap.ui.model.json.JSONModel",
 				"settings": {},
 				"uri": ""
