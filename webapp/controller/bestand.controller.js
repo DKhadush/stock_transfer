@@ -547,107 +547,116 @@ sap.ui.define([
                 maktx: oMaktx
 			});
 		},
-	transferMaterials: function () {
-		    var oMaterialModel = this.getView().getModel("materialList");
-		    var aMaterials = oMaterialModel.getProperty("/materials");
-		
-		    // Überprüfen, ob es Materialien im Warenkorb gibt
-		    if (!aMaterials || aMaterials.length === 0) {
-		        sap.m.MessageToast.show("Der Warenkorb ist leer.");
-		        return;
-		    }
-		
-		    var oGlobalModel = this.getOwnerComponent().getModel("globalModel");
-		
-		    // Hole Quell- und Zielwerk sowie Lagerort aus dem globalen Modell
-		    var oSourceWerks = oGlobalModel.getProperty("/Werks");
-		    var oSourceLgort = oGlobalModel.getProperty("/Lgort");
-		    var oDestWerks = oGlobalModel.getProperty("/zielWerks");
-		    var oDestLgort = oGlobalModel.getProperty("/zielLgort");
-		
-		    if (!oSourceWerks || !oSourceLgort || !oDestWerks || !oDestLgort) {
-		        sap.m.MessageBox.error("Bitte geben Sie sowohl das Quellwerk und den Quell-Lagerort als auch das Zielwerk und den Ziel-Lagerort an.");
-		        return;
-		    }
-		
-		    var oBackendModel = this.getView().getModel(); // Backend OData Model
-		    var aBatchPromises = []; // Array für Batch-Operationen
-		
-		    // Iteriere über die Materialien im Warenkorb
-		    aMaterials.forEach(function (oMaterial) {
-		        var oPayload = {
-		            Matnr: oMaterial.Matnr,     // Materialnummer
-		            Tmenge: oMaterial.bMenge.toString(),    // Transfermenge
-		            Werks: oSourceWerks.substring(0, 4),         // Quellwerk
-		            Lgort: oSourceLgort,         // Quell-Lagerort
-		            Dwerks: oDestWerks.substring(0, 4),          // Zielwerk
-		            Dlgort: oDestLgort,           // Ziel-Lagerort
-		            Tart: "Q"
-		        };
-		
-		        // Erstelle ein Promise für jeden Materialtransfer (POST-Anfrage)
-		        var oBatchPromise = new Promise(function (resolve, reject) {
-		            oBackendModel.create("/transferItemSet", oPayload, {
-		                success: function (oData) {
-		                    resolve({
-		                        success: true,
-		                        material: oMaterial.Matnr
-		                    });
-		                },
-		                error: function (oError) {
-		                    reject({
-		                        success: false,
-		                        material: oMaterial.Matnr,
-		                        error: oError
-		                    });
-		                }
-		            });
-		        });
-		
-		        aBatchPromises.push(oBatchPromise);
-		    });
-		
-		    // Warte auf alle Batch-Operationen
-		    Promise.allSettled(aBatchPromises)
-		        .then(function (aResults) {
-		            var aSuccessMaterials = [];
-		            var aFailedMaterials = [];
-		            var aRemainingMaterials = [];
-		
-		            aResults.forEach(function (oResult) {
-		                if (oResult.status === "fulfilled" && oResult.value.success) {
-		                    aSuccessMaterials.push(oResult.value.material);
-		                } else if (oResult.status === "rejected") {
-		                    aFailedMaterials.push(oResult.reason.material);
-		                    // Füge fehlgeschlagene Materialien zurück zu den verbleibenden Materialien hinzu
-		                    aRemainingMaterials.push(aMaterials.find(function (mat) {
-		                        return mat.Matnr === oResult.reason.material;
-		                    }));
-		                }
-		            });
-		
-		            // Aktualisiere das Materialmodell mit den verbleibenden (fehlgeschlagenen) Materialien
-		            oMaterialModel.setProperty("/materials", aRemainingMaterials);
-		
-		            // Feedback-Nachricht
-		            var sMessage = "";
-		            if (aSuccessMaterials.length > 0) {
-		                sMessage += "Erfolgreich übertragen: " + aSuccessMaterials.join(", ") + ".\n";
-		            }
-		            if (aFailedMaterials.length > 0) {
-		                sMessage += "Fehler bei der Übertragung folgender Materialien: " + aFailedMaterials.join(", ") + ".";
-		            }
-		
-		            sap.m.MessageBox.success(sMessage);
-		
-		            // Optional: Den Transfer-Button ausblenden, wenn keine Materialien mehr im Warenkorb sind
-		            if (aRemainingMaterials.length === 0) {
-		                this.getView().byId("btnTransfer").setVisible(false);
-		            }
-		        }.bind(this))
-		        .catch(function (oError) {
-		            sap.m.MessageBox.error("Fehler beim Übertragen der Materialien.");
-		        });
-		}
+transferMaterials: function () {
+    var oMaterialModel = this.getView().getModel("materialList");
+    var aMaterials = oMaterialModel.getProperty("/materials");
+
+    // Check if there are materials in the cart
+    if (!aMaterials || aMaterials.length === 0) {
+        sap.m.MessageToast.show("Der Warenkorb ist leer.");
+        return;
+    }
+
+    var oGlobalModel = this.getOwnerComponent().getModel("globalModel");
+
+    // Get source and destination plant and storage location from the global model
+    var oSourceWerks = oGlobalModel.getProperty("/Werks");
+    var oSourceLgort = oGlobalModel.getProperty("/Lgort");
+    var oDestWerks = oGlobalModel.getProperty("/zielWerks");
+    var oDestLgort = oGlobalModel.getProperty("/zielLgort");
+
+    if (!oSourceWerks || !oSourceLgort || !oDestWerks || !oDestLgort) {
+        sap.m.MessageBox.error("Bitte geben Sie sowohl das Quellwerk und den Quell-Lagerort als auch das Zielwerk und den Ziel-Lagerort an.");
+        return;
+    }
+
+    var oBackendModel = this.getView().getModel(); // Backend OData Model
+    var aBatchPromises = []; // Array for batch operations
+
+    // Iterate over the materials in the cart
+    aMaterials.forEach(function (oMaterial) {
+        var oPayload = {
+            Matnr: oMaterial.Matnr,      // Material number
+            Tmenge: oMaterial.bMenge.toString(), // Transfer quantity
+            Werks: oSourceWerks.substring(0, 4),   // Source plant
+            Lgort: oSourceLgort,         // Source storage location
+            Dwerks: oDestWerks.substring(0, 4),    // Destination plant
+            Dlgort: oDestLgort,          // Destination storage location
+            Tart: "Q"                    // Transfer type (Umlagerung)
+        };
+
+        // Create a Promise for each material transfer (POST request)
+        var oBatchPromise = new Promise(function (resolve, reject) {
+            oBackendModel.create("/transferItemSet", oPayload, {
+                success: function (oData) {
+                    // Check if the msg field is filled (indicating an error in the backend)
+                    if (oData.Msg && oData.Msg !== '') {
+                        reject({
+                            success: false,
+                            material: oMaterial.Matnr,
+                            message: oData.Msg // Use the backend error message
+                        });
+                    } else {
+                        resolve({
+                            success: true,
+                            material: oMaterial.Matnr,
+                            message: "Erfolgreich übertragen"
+                        });
+                    }
+                },
+                error: function (oError) {
+                    reject({
+                        success: false,
+                        material: oMaterial.Matnr,
+                        message: oError.responseText || "Fehler beim Übertragen"
+                    });
+                }
+            });
+        });
+
+        aBatchPromises.push(oBatchPromise);
+    });
+
+    // Wait for all batch operations to complete
+    Promise.allSettled(aBatchPromises)
+        .then(function (aResults) {
+            var sMessage = '';
+            var aRemainingMaterials = [];
+
+            aResults.forEach(function (oResult) {
+                if (oResult.status === "fulfilled" && oResult.value.success) {
+                    // Log success materials for debugging
+                    console.log("Success Material:", oResult.value.material);
+                    sMessage += "Material: " + oResult.value.material + " - " + oResult.value.message + "\n";
+                } else if (oResult.status === "rejected") {
+                    // Log failed materials for debugging
+                    console.log("Failed Material:", oResult.reason.material);
+                    sMessage += "Fehler bei Material: " + oResult.reason.material + " - " + oResult.reason.message + "\n";
+                    // Add failed materials back to the remaining list
+                    aRemainingMaterials.push(aMaterials.find(function (mat) {
+                        return mat.Matnr === oResult.reason.material;
+                    }));
+                }
+            });
+
+            // Update the material model with remaining materials (failed ones)
+            oMaterialModel.setProperty("/materials", aRemainingMaterials);
+
+            // Show feedback message
+            if (sMessage) {
+                sap.m.MessageBox.show(sMessage, {
+                    title: "Umlagerungsübersicht",
+                    icon: sap.m.MessageBox.Icon.NONE // No icon
+                });
+            }
+            // Hide the transfer button if no materials are left in the cart
+            if (aRemainingMaterials.length === 0) {
+                this.getView().byId("btnTransfer").setVisible(false);
+            }
+        }.bind(this))
+        .catch(function (oError) {
+            sap.m.MessageBox.error("Fehler beim Übertragen der Materialien.");
+        });
+}
     });
 });
