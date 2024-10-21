@@ -118,42 +118,58 @@ sap.ui.define([
 			    this.oDialog.open();
 			}
 		},
-		
-		onBasketMaterialPressEvent: function (oEvent) {
-		    var oView = this.getView();
-		    var oSelectedItem = oEvent.getSource();
-		    var oContext = oSelectedItem.getBindingContext("materialList");
-		    var sPath = oContext.getPath();
-		    
-		    if (!this.oDialog) {
-		        sap.ui.core.Fragment.load({
-		            id: oView.getId(),
-		            name: "com.mindsquare.stock.transfer.view.fragments.addBasketMaterial",  // Neues Fragment für den Warenkorb
-		            controller: this
-		        }).then(function (oDialog) {
-		            this.oDialog = oDialog;
-		            oView.addDependent(this.oDialog);
-		            
-		            // Binde den Dialog an das ausgewählte Element im Warenkorb
-		            this.oDialog.bindElement({
-		                path: sPath,
-		                model: "materialList"
-		            });
-		            
-		            this.oDialog.open();
-		        }.bind(this)).catch(function (error) {
-		            console.error("Error loading fragment:", error);
-		        });
-		    } else {
-		        // Wenn der Dialog schon existiert, einfach nur das Element binden und öffnen
-		        this.oDialog.bindElement({
-		            path: sPath,
-		            model: "materialList"
-		        });
-		        this.oDialog.open();
-		    }
-		},
-				
+	onBasketMaterialPressEvent: function (oEvent) {
+    var oView = this.getView();
+    var oSelectedItem = oEvent.getSource();
+    
+    // Hole den Kontext des ausgewählten Elements im materialList-Modell
+    var oContext = oSelectedItem.getBindingContext("materialList");
+    var oMaterial = oContext.getObject();
+    var sMatnr = oMaterial.Matnr;
+
+    // Hole das StockModel und die Liste der Materialien darin
+    var oStockModel = this.getView().getModel("StockModel");
+    var aStockMaterials = oStockModel.getProperty("/"); // Annahme: Die Materialliste ist an der Wurzel des Modells
+
+    // Finde das Material im StockModel basierend auf der Materialnummer
+    var iIndex = aStockMaterials.findIndex(function(oStockMaterial) {
+        return oStockMaterial.Matnr === sMatnr;
+    });
+
+    // Falls das Material im StockModel gefunden wurde
+    if (iIndex !== -1) {
+        var sStockPath = "/" + iIndex;  // Der Pfad zum Material im StockModel
+
+        // Wenn der Dialog bereits existiert, zerstöre ihn, um das Binding neu zu setzen
+        if (this.oDialog) {
+            this.oDialog.destroy();
+            this.oDialog = null;
+        }
+
+        // Lade den Dialog und binde das korrekte Material aus dem StockModel
+        sap.ui.core.Fragment.load({
+            id: oView.getId(),
+            name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  // Verwende das vorhandene Fragment
+            controller: this
+        }).then(function (oDialog) {
+            this.oDialog = oDialog;
+            oView.addDependent(this.oDialog);
+
+            // Binde den Dialog an das gefundene Material im StockModel
+            this.oDialog.bindElement({
+                path: sStockPath,
+                model: "StockModel"
+            });
+
+            this.oDialog.open();
+        }.bind(this)).catch(function (error) {
+            console.error("Error loading fragment:", error);
+        });
+    } else {
+        sap.m.MessageToast.show("Material nicht im Bestand gefunden.");
+    }
+},
+	
 		onRemoveMaterialPress: function () {
 		    var oModel = this.getView().getModel("materialList");
 		    var sPath = this.oDialog.getBindingContext("materialList").getPath();
@@ -168,6 +184,10 @@ sap.ui.define([
 		        this.getView().byId("btnTransfer").setVisible(false);
 		    }
 		    
+		    // Aktualisiere das StockModel
+		    
+		    var oStockModel = this.getView().getModel("StockModel");
+		    oStockModel.updateBindings(true);
 		    this.oDialog.close();
 		},
 

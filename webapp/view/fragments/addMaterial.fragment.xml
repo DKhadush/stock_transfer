@@ -51,11 +51,7 @@
 
                                             <!-- Eingabefeld für Menge -->
                                             <Label text="{i18n>enterQuantity}" />
-<<<<<<< HEAD
                                             <Input id="iMenge" value="0" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
-=======
-                                            <Input id="iMenge" type="Number" placeholder="{i18n>enterQuantityPlaceholder}" />
->>>>>>> refs/remotes/origin/master
                                         </FlexBox>
                                     </f:content>
                                 </f:SimpleForm>
