@@ -67,7 +67,7 @@
         <endButton>
         	<Button text="{i18n>addStock}" icon="sap-icon://add" type="Accept" press="onBtnSubmitPress"/>
         </endButton>
-            <Button text="{i18n>remove}" id="rmvBtn" icon="sap-icon://delete" type="Reject" visible="false" press="onRemoveMaterialPress"/>
+        <Button text="{i18n>remove}" id="rmvBtn" icon="sap-icon://delete" type="Reject" visible="false" press="onRemoveMaterialPress"/>
         
     </Dialog>
 </core:FragmentDefinition>

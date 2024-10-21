@@ -139,7 +139,7 @@
 						<Button id="btnCancel" text="Abbrechen" press="cancelTransfer" icon="sap-icon://sys-cancel" type="Reject" />
 					</contentLeft>
 					<contentMiddle>
-						<Button id="btnEmpty" text="Leeren" press="emptyBasket" enabled="false" visible="false" icon="sap-icon://save" type="Accept" />
+						<Button id="btnEmpty" text="Leeren" press="emptyBasket" enabled="false" visible="false" type="Reject" />
 					</contentMiddle>
 					<contentRight>
 						<Button id="btnTransfer" text="Umlagern" press="transferMaterials" enabled="false" visible="false" icon="sap-icon://save" type="Accept" />

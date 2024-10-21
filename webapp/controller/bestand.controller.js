@@ -85,13 +85,16 @@ sap.ui.define([
 		    var oSelectedItem = oEvent.getSource();
 		    var oContext = oSelectedItem.getBindingContext("StockModel");
 		    var sPath = oContext.getPath(); 
-			
+			 // Setze den Entfernen-Button unsichtbar
 		    if (!this.oDialog) {
 			    sap.ui.core.Fragment.load({
 			        id: oView.getId(),  
 			        name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  
 			        controller: this 
 			    }).then(function (oDialog) {
+			    	 // Setze den Entfernen-Button unsichtbar
+			        var oBtnRemove = sap.ui.core.Fragment.byId(oView.getId(), "rmvBtn");
+			        oBtnRemove.setVisible(false);
 			        // Store the loaded fragment as the dialog
 			        this.oDialog = oDialog;
 			
@@ -103,6 +106,7 @@ sap.ui.define([
 			            path: sPath, 
 			            model: "StockModel"
 			        });
+			        
 			        // Open the dialog
 			        this.oDialog.open();
 			    }.bind(this))  
@@ -115,79 +119,118 @@ sap.ui.define([
 			        path: sPath, 
 			        model: "StockModel"
 			    });
+			    var oBtnRemove = sap.ui.core.Fragment.byId(oView.getId(), "rmvBtn");
+			    oBtnRemove.setVisible(false);
 			    this.oDialog.open();
 			}
 		},
-	onBasketMaterialPressEvent: function (oEvent) {
-    var oView = this.getView();
-    var oSelectedItem = oEvent.getSource();
-    
-    // Hole den Kontext des ausgewählten Elements im materialList-Modell
-    var oContext = oSelectedItem.getBindingContext("materialList");
-    var oMaterial = oContext.getObject();
-    var sMatnr = oMaterial.Matnr;
-
-    // Hole das StockModel und die Liste der Materialien darin
-    var oStockModel = this.getView().getModel("StockModel");
-    var aStockMaterials = oStockModel.getProperty("/"); // Annahme: Die Materialliste ist an der Wurzel des Modells
-
-    // Finde das Material im StockModel basierend auf der Materialnummer
-    var iIndex = aStockMaterials.findIndex(function(oStockMaterial) {
-        return oStockMaterial.Matnr === sMatnr;
-    });
-
-    // Falls das Material im StockModel gefunden wurde
-    if (iIndex !== -1) {
-        var sStockPath = "/" + iIndex;  // Der Pfad zum Material im StockModel
-
-        // Wenn der Dialog bereits existiert, zerstöre ihn, um das Binding neu zu setzen
-        if (this.oDialog) {
-            this.oDialog.destroy();
-            this.oDialog = null;
-        }
-
-        // Lade den Dialog und binde das korrekte Material aus dem StockModel
-        sap.ui.core.Fragment.load({
-            id: oView.getId(),
-            name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  // Verwende das vorhandene Fragment
-            controller: this
-        }).then(function (oDialog) {
-            this.oDialog = oDialog;
-            oView.addDependent(this.oDialog);
-
-            // Binde den Dialog an das gefundene Material im StockModel
+		
+		onBasketMaterialPressEvent: function (oEvent) {
+		    var oView = this.getView();
+		    var oSelectedItem = oEvent.getSource();
+		    
+		    // Hole den Kontext des ausgewählten Elements im materialList-Modell
+		    var oContext = oSelectedItem.getBindingContext("materialList");
+		    var oMaterial = oContext.getObject();
+		    var sMatnr = oMaterial.Matnr;
+		
+		    // Hole das StockModel und die Liste der Materialien darin
+		    var oStockModel = this.getView().getModel("StockModel");
+		    var aStockMaterials = oStockModel.getProperty("/"); // Annahme: Die Materialliste ist an der Wurzel des Modells
+		
+		    // Finde das Material im StockModel basierend auf der Materialnummer
+		    var iIndex = aStockMaterials.findIndex(function(oStockMaterial) {
+		        return oStockMaterial.Matnr === sMatnr;
+		    });
+		
+		    // Falls das Material im StockModel gefunden wurde
+		    if (iIndex !== -1) {
+		        var sStockPath = "/" + iIndex;  // Der Pfad zum Material im StockModel
+		
+		        // Wenn der Dialog bereits existiert, zerstöre ihn, um das Binding neu zu setzen
+		        if (this.oDialog) {
+		            this.oDialog.destroy();
+		            this.oDialog = null;
+		        }
+		
+		        // Lade den Dialog und binde das korrekte Material aus dem StockModel
+		        sap.ui.core.Fragment.load({
+		            id: oView.getId(),
+		            name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  // Verwende das vorhandene Fragment
+		            controller: this
+		        }).then(function (oDialog) {
+		            this.oDialog = oDialog;
+		            oView.addDependent(this.oDialog);
+		
+		            // Binde den Dialog an das gefundene Material im StockModel
+		            this.oDialog.bindElement({
+		                path: sStockPath,
+		                model: "StockModel"
+		            });
+					 // Binde zusätzlich den Dialog an den Kontext des materials im materialList Modell
             this.oDialog.bindElement({
-                path: sStockPath,
-                model: "StockModel"
+                path: oContext.getPath(),
+                model: "materialList"
             });
-
-            this.oDialog.open();
-        }.bind(this)).catch(function (error) {
-            console.error("Error loading fragment:", error);
-        });
-    } else {
-        sap.m.MessageToast.show("Material nicht im Bestand gefunden.");
-    }
-},
-	
+		            // Setze den Entfernen-Button auf sichtbar, da der Dialog aus dem Warenkorb geöffnet wird
+		            var oBtnRemove = sap.ui.core.Fragment.byId(oView.getId(), "rmvBtn");
+		            oBtnRemove.setVisible(true);
+		            this.oDialog.open();
+		        }.bind(this)).catch(function (error) {
+		            console.error("Error loading fragment:", error);
+		        });
+		    } else {
+		        sap.m.MessageToast.show("Material nicht im Bestand gefunden.");
+		    }
+		},
+		
 		onRemoveMaterialPress: function () {
 		    var oModel = this.getView().getModel("materialList");
-		    var sPath = this.oDialog.getBindingContext("materialList").getPath();
+		    
+		    // Überprüfe, ob der Dialog eine Bindung hat
+		    var oDialogContext = this.oDialog.getBindingContext("materialList");
+		    
+		    if (!oDialogContext) {
+		        console.error("Kein gültiger Bindungskontext für das materialList-Modell gefunden.");
+		        return;
+		    }
+		    
+		    var sPath = oDialogContext.getPath();  // Hole den Pfad des ausgewählten Materials
 		    
 		    // Entferne das Material aus der Liste
 		    var aMaterials = oModel.getProperty("/materials");
-		    aMaterials.splice(parseInt(sPath.split("/")[2]), 1);  // Entfernt das Material aus dem Array
+		    var removedMaterial = aMaterials.splice(parseInt(sPath.split("/")[2]), 1)[0];  // Entfernt das Material aus dem Array
 		    oModel.setProperty("/materials", aMaterials);
 		    
 		    // Überprüfe, ob der Warenkorb leer ist, und blende den Button zum Senden aus
 		    if (aMaterials.length === 0) {
 		        this.getView().byId("btnTransfer").setVisible(false);
 		    }
-		    
-		    // Aktualisiere das StockModel
-		    
+		
+		    // Aktualisiere das StockModel und erhöhe die Menge im Lagerbestand
 		    var oStockModel = this.getView().getModel("StockModel");
-		    oStockModel.updateBindings(true);
+		    var aStockMaterials = oStockModel.getProperty("/"); // Annahme: Materialliste im StockModel
+		
+		    var iIndex = aStockMaterials.findIndex(function(oStockMaterial) {
+		        return oStockMaterial.Matnr === removedMaterial.Matnr;
+		    });
+		
+		    if (iIndex !== -1) {
+		        var oStockMaterial = aStockMaterials[iIndex];
+		        // Erhöhe die Menge im StockModel um die entfernte Menge
+		        oStockMaterial.bMenge -= removedMaterial.bMenge;
+		
+		        // Falls das Material nicht mehr im Warenkorb ist, setze es wieder auf aktiv (falls deaktiviert)
+		        if (oStockMaterial.isBlass) {
+		            oStockMaterial.isBlass = false;
+		        }
+		
+		        // Setze die aktualisierte Menge im StockModel
+		        oStockModel.setProperty("/" + iIndex + "/bMenge", oStockMaterial.bMenge);
+		        oStockModel.setProperty("/" + iIndex + "/isBlass", oStockMaterial.isBlass);
+		    }
+		
+		    oStockModel.updateBindings(true); // Aktualisiere die Bindungen des StockModels
 		    this.oDialog.close();
 		},
 
@@ -345,37 +388,38 @@ sap.ui.define([
                 }
             });
         },
-        
 		onIconTabPress: function (oEvent) {
 		    try {
 		        var sSelectedKey = oEvent.getSource().getSelectedKey();
 		        var oBtnTransfer = sap.ui.core.Fragment.byId(this.getView().getId(), "btnTransfer");
+		        var oBtnEmpty = sap.ui.core.Fragment.byId(this.getView().getId(), "btnEmpty");
 		        var aMaterials = this.getView().getModel("materialList").getProperty("/materials");
-		        var oBtnRmv = sap.ui.core.Fragment.byId(this.getView().getId(), "rmvBtn");
+		        var oBtnRemove = sap.ui.core.Fragment.byId(this.getView().getId(), "rmvBtn");  // Verwende this.getView()
 		
 		        switch (sSelectedKey) {
 		            case "Basket":
 		                // Stelle sicher, dass der Button sichtbar ist
 		                oBtnTransfer.setVisible(true);
-		
+						oBtnEmpty.setVisible(true);
 		                // Überprüfe die Anzahl der Materialien
 		                if (aMaterials && aMaterials.length > 0) {
 		                    oBtnTransfer.setEnabled(true);  // Aktivieren, wenn Materialien vorhanden sind
+		                    oBtnEmpty.setEnabled(true);
 		                } else {
 		                    oBtnTransfer.setEnabled(false); // Deaktivieren, wenn keine Materialien vorhanden sind
+		                    oBtnEmpty.setEnabled(false);
 		                }
 		
 		                // Aktualisiere die Bindungen der Liste
 		                var oList = this.getView().byId("basketList").getBinding("items");
 		                oList.getModel().updateBindings(true);
-		                oBtnRmv.setVisible(true);
 		                break;
 		
 		            case "FreeStock":
 		                // Button im Material-Tab ausblenden
 		                oBtnTransfer.setVisible(false);
-		                
-		                oBtnRmv.setVisible(false);
+		                oBtnRemove.setVisible(false);  // Button auch ausblenden
+		                oBtnEmpty.setVisible(false);
 		                break;
 		        }
 		    } catch (e) {
@@ -383,9 +427,63 @@ sap.ui.define([
 		        if (oBtnTransfer) {
 		            oBtnTransfer.setVisible(false);
 		        }
+		        if (oBtnEmpty) {
+		            oBtnEmpty.setVisible(false);
+		        }
 		        console.error("Fehler im onIconTabPress-Handler", e);
 		    }
 		},
+
+		emptyBasket: function () {
+		    var oMaterialListModel = this.getView().getModel("materialList");
+		    var aMaterials = oMaterialListModel.getProperty("/materials");
+		    
+		    // Wenn der Warenkorb leer ist, nichts tun
+		    if (!aMaterials || aMaterials.length === 0) {
+		        sap.m.MessageToast.show("Der Warenkorb ist bereits leer.");
+		        return;
+		    }
+		
+		    // 1. Aktualisiere das StockModel: Setze die Mengen zurück
+		    var oStockModel = this.getView().getModel("StockModel");
+		    var aStockMaterials = oStockModel.getProperty("/");
+		
+		    // Durchlaufe die Materialien im Warenkorb und aktualisiere das StockModel
+		    aMaterials.forEach(function (oMaterial) {
+		        var iIndex = aStockMaterials.findIndex(function (oStockMaterial) {
+		            return oStockMaterial.Matnr === oMaterial.Matnr;
+		        });
+		
+		        if (iIndex !== -1) {
+		            // Aktualisiere die Menge im StockModel, indem die Warenkorbmenge abgezogen wird
+		            var oStockMaterial = aStockMaterials[iIndex];
+		            oStockMaterial.bMenge -= oMaterial.bMenge;
+		
+		            // Falls der Bestand vollständig im Warenkorb war, reaktiviere das Material
+		            if (oStockMaterial.isBlass) {
+		                oStockMaterial.isBlass = false;
+		            }
+		
+		            // Aktualisiere die geänderten Werte im StockModel
+		            oStockModel.setProperty("/" + iIndex + "/bMenge", oStockMaterial.bMenge);
+		            oStockModel.setProperty("/" + iIndex + "/isBlass", oStockMaterial.isBlass);
+		        }
+		    });
+		
+		    // 2. Leere den Warenkorb (materialList)
+		    oMaterialListModel.setProperty("/materials", []);
+		
+		    // 3. Aktualisiere die Bindungen des StockModels und des Warenkorbs
+		    oStockModel.updateBindings(true);
+		    oMaterialListModel.updateBindings(true);
+		
+		    // Optional: Den Transfer-Button ausblenden, wenn keine Materialien mehr im Warenkorb sind
+		    this.getView().byId("btnTransfer").setVisible(false);
+		
+		    // Erfolgsmeldung anzeigen
+		    sap.m.MessageToast.show("Warenkorb geleert.");
+		},
+
 		cancelTransfer: function() {
 		    // Schritt 1: Zurück zur `werkauswahl.view` navigieren
 		    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
