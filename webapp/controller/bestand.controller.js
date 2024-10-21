@@ -57,6 +57,7 @@ sap.ui.define([
             });
         },
         
+<<<<<<< HEAD
          // Materialsuche in der Liste mit dynamischer Filterung
         onSearchMaterial: function (oEvent) {
             var sQuery = oEvent.getParameter("newValue");  // Der eingegebene Suchwert
@@ -80,6 +81,8 @@ sap.ui.define([
             oBinding.filter(aFilters);
         },
         
+=======
+>>>>>>> refs/remotes/origin/master
     	onMaterialPressEvent: function (oEvent) {
 		    var oView = this.getView();
 		    var oSelectedItem = oEvent.getSource();
@@ -87,6 +90,7 @@ sap.ui.define([
 		    var sPath = oContext.getPath(); 
 			
 		    if (!this.oDialog) {
+<<<<<<< HEAD
 			    sap.ui.core.Fragment.load({
 			        id: oView.getId(),  
 			        name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  
@@ -113,12 +117,43 @@ sap.ui.define([
 			    // If the dialog already exists, just bind the element and open it
 			    this.oDialog.bindElement({
 			        path: sPath, 
+=======
+			    // Load the fragment asynchronously using sap.ui.core.Fragment.load
+			    sap.ui.core.Fragment.load({
+			        id: oView.getId(),  // Optionally provide a unique ID for the dialog
+			        name: "com.mindsquare.stock.transfer.view.fragments.addMaterial",  // Ensure this path is correct
+			        controller: this  // The current controller will handle the events
+			    }).then(function (oDialog) {
+			        // Store the loaded fragment as the dialog
+			        this.oDialog = oDialog;
+			
+			        // Add the dialog as a dependent to ensure lifecycle management
+			        oView.addDependent(this.oDialog);
+			
+			        // Bind the dialog to the selected item's context
+			        this.oDialog.bindElement({
+			            path: sPath,  // Ensure sPath is correctly pointing to the item
+			            model: "StockModel"
+			        });
+			
+			        // Open the dialog
+			        this.oDialog.open();
+			    }.bind(this))  // Bind the "this" context to the controller
+			    .catch(function (error) {
+			        console.error("Error loading fragment:", error);
+			    });
+			} else {
+			    // If the dialog already exists, just bind the element and open it
+			    this.oDialog.bindElement({
+			        path: sPath,  // The path of the selected item
+>>>>>>> refs/remotes/origin/master
 			        model: "StockModel"
 			    });
 			    this.oDialog.open();
 			}
 		},
 		
+<<<<<<< HEAD
 		onBasketMaterialPressEvent: function (oEvent) {
 		    var oView = this.getView();
 		    var oSelectedItem = oEvent.getSource();
@@ -256,6 +291,58 @@ sap.ui.define([
 		    // Schließe den Dialog
 		    this.oDialog.close();
 		},
+=======
+		       
+    	onBtnCancelPress: function () {
+            this.oDialog.close();
+       },
+       
+		onBtnSubmitPress: function () {
+            var oView = this.getView();
+            var oDialog = this.oDialog;
+            var oModel = this.getView().getModel("materialList");
+
+            // Hole die Eingabedaten
+            var oSelectedMaterial = oDialog.getBindingContext("StockModel").getObject();
+            var oInputQuantity = sap.ui.core.Fragment.byId(this.getView().getId(), "iMenge");
+    		var quantityValue = parseFloat(oInputQuantity.getValue());
+
+            // Validierung
+            if (isNaN(quantityValue) || quantityValue <= 0) {
+                sap.m.MessageBox.error("Bitte geben Sie eine gültige Menge ein.");
+                return;
+            }
+
+            // Überprüfe, ob das Material bereits im Warenkorb ist
+            var aMaterialList = oModel.getProperty("/materials");
+            var bMaterialExists = false;
+
+            aMaterialList.forEach(function (oItem) {
+                if (oItem.Matnr === oSelectedMaterial.Matnr && oItem.Lgort === oSelectedMaterial.Lgort) {
+                    oItem.Menge += quantityValue;
+                    bMaterialExists = true;
+                }
+            });
+
+            // Füge das Material hinzu, wenn es noch nicht im Warenkorb ist
+            if (!bMaterialExists) {
+                var oNewEntry = {
+                    Matnr: oSelectedMaterial.Matnr,
+                    Maktx: oSelectedMaterial.Maktx,
+                    Lgort: oSelectedMaterial.Lgort,
+                    Werks: oSelectedMaterial.Werks,
+                    Menge: quantityValue,
+                    Meins: oSelectedMaterial.Meins
+                };
+                aMaterialList.push(oNewEntry);
+            }
+
+            oModel.setProperty("/materials", aMaterialList);
+            MessageToast.show("Material hinzugefügt.");
+
+            this.oDialog.close();
+        },
+>>>>>>> refs/remotes/origin/master
 
 
         // Blasse Materialien darstellen
@@ -326,6 +413,7 @@ sap.ui.define([
             });
         },
         
+<<<<<<< HEAD
 		onIconTabPress: function (oEvent) {
 		    try {
 		        var sSelectedKey = oEvent.getSource().getSelectedKey();
@@ -387,7 +475,10 @@ sap.ui.define([
 		    // Zeige eine Nachricht, dass der Transfer abgebrochen wurde
 		    sap.m.MessageToast.show("Transfer abgebrochen, Warenkorb geleert.");
 		},
+=======
+>>>>>>> refs/remotes/origin/master
 		
+<<<<<<< HEAD
 		embpyBasket: function() {
 		    var oMaterialListModel = this.getView().getModel("materialList");
 		    oMaterialListModel.setProperty("/materials", []); // Leeres Array setzt den Warenkorb zurück
@@ -401,6 +492,31 @@ sap.ui.define([
             this.getView().byId("basket").setCount(aMaterials.length);
         },
         
+=======
+        onIconTabPress: function (oEvent) {
+            try {
+                switch (oEvent.getSource().getSelectedKey()) {
+                    case "Basket":
+                        this.getView().byId("btnPost").setVisible(true);
+                        var oList = this.getView().byId("basketList").getBinding("items");
+                        oList.getModel().updateBindings(true);
+                        break;
+                    case "MaterialList":
+                        this.getView().byId("btnPost").setVisible(false);
+                        break;
+                }
+            } catch (e) {
+                this.getView().byId("btnPost").setVisible(true);
+            }
+        },
+
+		
+        onUpdateFinished: function () {
+            var oModel = this.getView().getModel("materialList");
+            var aMaterials = oModel.getProperty("/materials");
+            this.getView().byId("basket").setCount(aMaterials.length);
+        },
+>>>>>>> refs/remotes/origin/master
 
 		onPressEvent: function (oEvent) {
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -428,6 +544,7 @@ sap.ui.define([
                 labst: oLabst,
                 maktx: oMaktx
 			});
+<<<<<<< HEAD
 		},
 	transferMaterials: function () {
 		    var oMaterialModel = this.getView().getModel("materialList");
@@ -530,6 +647,8 @@ sap.ui.define([
 		        .catch(function (oError) {
 		            sap.m.MessageBox.error("Fehler beim Übertragen der Materialien.");
 		        });
+=======
+>>>>>>> refs/remotes/origin/master
 		}
     });
 });
