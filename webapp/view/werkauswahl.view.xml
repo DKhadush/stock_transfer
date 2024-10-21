@@ -98,7 +98,7 @@
             <footer>
 				<Bar>
 					<contentRight>
-						<Button id="btnStock" text="{i18n>loadingMaterials}" press="navToBestand" enabled="false" icon="sap-icon://save" type="Accept" />
+						<Button id="btnStock" text="{i18n>loadingMaterials}" press="navToBestand" enabled="false" type="Accept" />
 					</contentRight>
 				</Bar>
 			</footer>

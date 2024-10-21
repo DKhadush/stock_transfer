@@ -209,23 +209,53 @@ sap.ui.define([
 		},
 
         navToBestand: function (oEvent) {
-             // Zugriff auf das globale Modell
+		    // Zugriff auf das globale Modell
 		    var oModel = this.getOwnerComponent().getModel("globalModel");
 		    
 		    // Werks und Lagerort aus dem Modell abrufen
 		    var oWerks = oModel.getProperty("/Werks");
 		    var oLgort = oModel.getProperty("/Lgort");
+		    var oZielWerks = oModel.getProperty("/zielWerks");
+		    var oZielLgort = oModel.getProperty("/zielLgort");
+		    
+		    // Zugriff auf die Lagerort-Modelle (für Quell- und Ziellagerort)
+		    var oSourceLgortModel = this.getView().getModel("Lgort"); // Quell-Lagerort
+		    var oDestLgortModel = this.getView().getModel("DLgort"); // Ziel-Lagerort
+		    
+		    // Validierung der Lagerorte
+		    var bValidSourceLgort = oSourceLgortModel && oSourceLgortModel.getProperty("/Lagerorte").some(function (lgort) {
+		        return lgort.Lgort === oLgort;
+		    });
+		    
+		    var bValidDestLgort = oDestLgortModel && oDestLgortModel.getProperty("/Lagerorte").some(function (lgort) {
+		        return lgort.Lgort === oZielLgort;
+		    });
+		    
+		    // Validierung von Werks und Lagerorten
+		    if (!oWerks || !oLgort || !bValidSourceLgort) {
+		        sap.m.MessageToast.show("Bitte wählen Sie einen gültigen Quell-Lagerort.");
+		        return;
+		    }
+		    
+		    if (!oZielWerks || !oZielLgort || !bValidDestLgort) {
+		        sap.m.MessageToast.show("Bitte wählen Sie einen gültigen Ziel-Lagerort.");
+		        return;
+		    }
+			
+			if (oZielWerks === oWerks && oZielLgort === oLgort) {
+		        sap.m.MessageToast.show("Bitte wählen ein anderes Ziel-Lagerort.");
+		        return;
+		    }
+		    
+		    // Alles ist gültig, navigiere zur Bestandsansicht
+		    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+		    oRouter.navTo("bestand", {
+		        path: "bestands('" + oWerks + oLgort + "')",
+		        lgort: oLgort,
+		        werks: oWerks
+		    });
+		}
 
-            // Navigate to the detail route (assuming you have set up the routing correctly)
-            var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
-            
-            oRouter.navTo("bestand", {
-            	path: "bestands('" + oWerks + oLgort + "')",
-                lgort: oLgort,
-                werks: oWerks
-                
-            });
-        }
 
     });
 });

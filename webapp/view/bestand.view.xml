@@ -8,11 +8,14 @@
 
     <Page showNavButton="true" navButtonPress="onNavBack">
         <content>
-        	<IconTabBar id="idStockTabBar" class="sapUiResponsiveContentPadding" select="onIconTabPress">
+        	<IconTabBar id="idStockTabBar" class="sapUiResponsiveContentPadding" expanded="{device>/isNoPhone}" select="onIconTabPress">
 				<items>
 					<!-- Tab für Freien Bestand -->
 				   <!-- Tab für Freien Bestand -->
 			        <IconTabFilter icon="sap-icon://inventory" key="FreeStock">
+			        	 <!-- Suchfeld für die Materialsuche -->
+                            <SearchField id="searchField" liveChange="onSearchMaterial" placeholder="Suche nach Material" />
+                            
 			           <smartTable:SmartTable id="stockTable" 
 												 tableType="ResponsiveTable" 
 												 entitySet="stockItemSet" 
@@ -48,14 +51,16 @@
 						                <Text text="{i18n>description}" />
 						            </Column>
 						            
-						            <!--Column>
+						            
+						            
+						            <Column>
 						                <customData>
 						                    <core:CustomData key="p13nData"
 						                        value='{"columnKey": "Labst", "leadingProperty": "Labst", "sortProperty": "Labst", "filterProperty": "Labst", "columnIndex": "3", "visible": true}'/>
 						                </customData>
 						                <Text text="{i18n>quantity}" />
 						            </Column>
-						            <Column>
+						            <!--Column>
 						                <customData>
 						                    <core:CustomData key="p13nData"
 						                        value='{"columnKey": "Werks", "leadingProperty": "Werks", "sortProperty": "Werks", "filterProperty": "Werks", "columnIndex": "4", "visible": false}'/>
@@ -75,8 +80,9 @@
 								        <cells>
 								            <Text text="{StockModel>Matnr}" />	
 								            <Text text="{StockModel>Maktx}" />
-								            <Text text="{StockModel>Labst}" />
-								            <Text text="{StockModel>Werks}" />
+								            <Text text="{= ${StockModel>bMenge} ? (${StockModel>Labst} - (${StockModel>bMenge} )) : ${StockModel>Labst} }" />
+
+											<Text text="{StockModel>Werks}" />
 								            <Text text="{StockModel>Lgort}" />
 								        </cells>
 								    </ColumnListItem>
@@ -87,10 +93,11 @@
 	
 			        </IconTabFilter>
 			        
-			        <IconTabFilter id="basket" key="Basket" icon="sap-icon://cart" count="{materialList>/materials.length}">
+			        <IconTabFilter id="basket"  header="Materialübersicht zum Umlagern nach Werk {globalModel>/zielWerks} und Lagerort {globalModel>/zielLgort}" key="Basket" icon="sap-icon://cart" count="{materialList>/materials.length}">
+			        	<VBox title="hallo">
 						<List id="basketList" noDataText="{i18n>noMaterialList}" items="{materialList>/materials}" updateFinished="onUpdateFinished">
 							<items>
-								<ObjectListItem title="{materialList>Matnr}" type="Active" press="onMaterialListItemPress" number="{materialList>bMenge}"
+								<ObjectListItem title="{materialList>Matnr}" type="Active" press="onBasketMaterialPressEvent" number="{materialList>bMenge}"
 									numberUnit="{materialList>Meins}">
 									<attributes>
 										<ObjectAttribute text="{materialList>Maktx}"/>
@@ -99,6 +106,8 @@
 								</ObjectListItem>
 							</items>
 						</List>
+						</VBox>
+						
 					</IconTabFilter>
 				
 			        <!-- Tab für Gesperrten Bestand>
@@ -124,5 +133,16 @@
 			</IconTabBar>
 		
         </content>
+        <footer>
+				<Bar>
+					<contentLeft>
+						<Button id="btnCancel" text="Abbrechen" press="cancelTransfer" icon="sap-icon://sys-cancel" type="Reject" />
+					</contentLeft>
+
+					<contentRight>
+						<Button id="btnTransfer" text="Umlagern" press="transferMaterials" enabled="false" visible="false" icon="sap-icon://save" type="Accept" />
+					</contentRight>
+				</Bar>
+			</footer>
     </Page>
 </mvc:View>

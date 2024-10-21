@@ -57,6 +57,29 @@ sap.ui.define([
             });
         },
         
+         // Materialsuche in der Liste mit dynamischer Filterung
+        onSearchMaterial: function (oEvent) {
+            var sQuery = oEvent.getParameter("newValue");  // Der eingegebene Suchwert
+            var aFilters = [];
+
+            if (sQuery && sQuery.length > 0) {
+                // Filter für Materialnummer (Matnr) oder Materialbeschreibung (Maktx)
+                var oMatnrFilter = new Filter("Matnr", FilterOperator.Contains, sQuery);
+                var oMaktxFilter = new Filter("Maktx", FilterOperator.Contains, sQuery);
+
+                // Kombiniere die Filter mit OR-Verknüpfung
+                aFilters = new Filter({
+                    filters: [oMatnrFilter, oMaktxFilter],
+                    and: false
+                });
+            }
+
+            // Hole die Tabellenbindung und wende die Filter an
+            var oTable = this.getView().byId("stockTable").getTable();
+            var oBinding = oTable.getBinding("items");
+            oBinding.filter(aFilters);
+        },
+        
     	onMaterialPressEvent: function (oEvent) {
 		    var oView = this.getView();
 		    var oSelectedItem = oEvent.getSource();
@@ -96,6 +119,58 @@ sap.ui.define([
 			}
 		},
 		
+		onBasketMaterialPressEvent: function (oEvent) {
+		    var oView = this.getView();
+		    var oSelectedItem = oEvent.getSource();
+		    var oContext = oSelectedItem.getBindingContext("materialList");
+		    var sPath = oContext.getPath();
+		    
+		    if (!this.oDialog) {
+		        sap.ui.core.Fragment.load({
+		            id: oView.getId(),
+		            name: "com.mindsquare.stock.transfer.view.fragments.addBasketMaterial",  // Neues Fragment für den Warenkorb
+		            controller: this
+		        }).then(function (oDialog) {
+		            this.oDialog = oDialog;
+		            oView.addDependent(this.oDialog);
+		            
+		            // Binde den Dialog an das ausgewählte Element im Warenkorb
+		            this.oDialog.bindElement({
+		                path: sPath,
+		                model: "materialList"
+		            });
+		            
+		            this.oDialog.open();
+		        }.bind(this)).catch(function (error) {
+		            console.error("Error loading fragment:", error);
+		        });
+		    } else {
+		        // Wenn der Dialog schon existiert, einfach nur das Element binden und öffnen
+		        this.oDialog.bindElement({
+		            path: sPath,
+		            model: "materialList"
+		        });
+		        this.oDialog.open();
+		    }
+		},
+				
+		onRemoveMaterialPress: function () {
+		    var oModel = this.getView().getModel("materialList");
+		    var sPath = this.oDialog.getBindingContext("materialList").getPath();
+		    
+		    // Entferne das Material aus der Liste
+		    var aMaterials = oModel.getProperty("/materials");
+		    aMaterials.splice(parseInt(sPath.split("/")[2]), 1);  // Entfernt das Material aus dem Array
+		    oModel.setProperty("/materials", aMaterials);
+		    
+		    // Überprüfe, ob der Warenkorb leer ist, und blende den Button zum Senden aus
+		    if (aMaterials.length === 0) {
+		        this.getView().byId("btnTransfer").setVisible(false);
+		    }
+		    
+		    this.oDialog.close();
+		},
+
 		       
     	onBtnCancelPress: function () {
             this.oDialog.close();
@@ -251,31 +326,75 @@ sap.ui.define([
             });
         },
         
+		onIconTabPress: function (oEvent) {
+		    try {
+		        var sSelectedKey = oEvent.getSource().getSelectedKey();
+		        var oBtnTransfer = sap.ui.core.Fragment.byId(this.getView().getId(), "btnTransfer");
+		        var aMaterials = this.getView().getModel("materialList").getProperty("/materials");
+		        var oBtnRmv = sap.ui.core.Fragment.byId(this.getView().getId(), "rmvBtn");
 		
-        onIconTabPress: function (oEvent) {
-            try {
-                switch (oEvent.getSource().getSelectedKey()) {
-                    case "Basket":
-                        this.getView().byId("btnPost").setVisible(true);
-                        var oList = this.getView().byId("basketList").getBinding("items");
-                        oList.getModel().updateBindings(true);
-                        break;
-                    case "MaterialList":
-                        this.getView().byId("btnPost").setVisible(false);
-                        break;
-                }
-            } catch (e) {
-                this.getView().byId("btnPost").setVisible(true);
-            }
-        },
+		        switch (sSelectedKey) {
+		            case "Basket":
+		                // Stelle sicher, dass der Button sichtbar ist
+		                oBtnTransfer.setVisible(true);
+		
+		                // Überprüfe die Anzahl der Materialien
+		                if (aMaterials && aMaterials.length > 0) {
+		                    oBtnTransfer.setEnabled(true);  // Aktivieren, wenn Materialien vorhanden sind
+		                } else {
+		                    oBtnTransfer.setEnabled(false); // Deaktivieren, wenn keine Materialien vorhanden sind
+		                }
+		
+		                // Aktualisiere die Bindungen der Liste
+		                var oList = this.getView().byId("basketList").getBinding("items");
+		                oList.getModel().updateBindings(true);
+		                oBtnRmv.setVisible(true);
+		                break;
+		
+		            case "FreeStock":
+		                // Button im Material-Tab ausblenden
+		                oBtnTransfer.setVisible(false);
+		                
+		                oBtnRmv.setVisible(false);
+		                break;
+		        }
+		    } catch (e) {
+		        // Stelle sicher, dass der Button versteckt wird, falls es einen Fehler gibt
+		        if (oBtnTransfer) {
+		            oBtnTransfer.setVisible(false);
+		        }
+		        console.error("Fehler im onIconTabPress-Handler", e);
+		    }
+		},
+		cancelTransfer: function() {
+		    // Schritt 1: Zurück zur `werkauswahl.view` navigieren
+		    var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
+		    oRouter.navTo("werkauswahl");
+		
+		    // Schritt 2: Warenkorb leeren (materialList Modell leeren)
+		    var oMaterialListModel = this.getView().getModel("materialList");
+		    oMaterialListModel.setProperty("/materials", []); // Leeres Array setzt den Warenkorb zurück
+		
+		    // Schritt 3: Globales Modell leeren
+		    var oGlobalModel = this.getView().getModel("globalModel");
+		    oGlobalModel.setProperty("/Werks", null); // Leert Werk
+		    oGlobalModel.setProperty("/Lgort", null); // Leert Lagerort
+		    oGlobalModel.setProperty("/zielWerks", null); // Leert Zielwerk
+		    oGlobalModel.setProperty("/zielLgort", null); // Leert Ziel-Lagerort
+		    
+		    // Optional: Falls du weitere Felder im globalModel hast, die geleert werden sollen, kannst du sie hier hinzufügen.
+		    
+		    // Zeige eine Nachricht, dass der Transfer abgebrochen wurde
+		    sap.m.MessageToast.show("Transfer abgebrochen, Warenkorb geleert.");
+		},
 
-
+		
         onUpdateFinished: function () {
-        	console.log(1);
             var oModel = this.getView().getModel("materialList");
             var aMaterials = oModel.getProperty("/materials");
             this.getView().byId("basket").setCount(aMaterials.length);
         },
+        
 
 		onPressEvent: function (oEvent) {
 			var oRouter = sap.ui.core.UIComponent.getRouterFor(this);
@@ -303,6 +422,108 @@ sap.ui.define([
                 labst: oLabst,
                 maktx: oMaktx
 			});
+		},
+	transferMaterials: function () {
+		    var oMaterialModel = this.getView().getModel("materialList");
+		    var aMaterials = oMaterialModel.getProperty("/materials");
+		
+		    // Überprüfen, ob es Materialien im Warenkorb gibt
+		    if (!aMaterials || aMaterials.length === 0) {
+		        sap.m.MessageToast.show("Der Warenkorb ist leer.");
+		        return;
+		    }
+		
+		    var oGlobalModel = this.getOwnerComponent().getModel("globalModel");
+		
+		    // Hole Quell- und Zielwerk sowie Lagerort aus dem globalen Modell
+		    var oSourceWerks = oGlobalModel.getProperty("/Werks");
+		    var oSourceLgort = oGlobalModel.getProperty("/Lgort");
+		    var oDestWerks = oGlobalModel.getProperty("/zielWerks");
+		    var oDestLgort = oGlobalModel.getProperty("/zielLgort");
+		
+		    if (!oSourceWerks || !oSourceLgort || !oDestWerks || !oDestLgort) {
+		        sap.m.MessageBox.error("Bitte geben Sie sowohl das Quellwerk und den Quell-Lagerort als auch das Zielwerk und den Ziel-Lagerort an.");
+		        return;
+		    }
+		
+		    var oBackendModel = this.getView().getModel(); // Backend OData Model
+		    var aBatchPromises = []; // Array für Batch-Operationen
+		
+		    // Iteriere über die Materialien im Warenkorb
+		    aMaterials.forEach(function (oMaterial) {
+		        var oPayload = {
+		            Matnr: oMaterial.Matnr,     // Materialnummer
+		            Tmenge: oMaterial.bMenge.toString(),    // Transfermenge
+		            Werks: oSourceWerks.substring(0, 4),         // Quellwerk
+		            Lgort: oSourceLgort,         // Quell-Lagerort
+		            Dwerks: oDestWerks.substring(0, 4),          // Zielwerk
+		            Dlgort: oDestLgort,           // Ziel-Lagerort
+		            Tart: "Q"
+		        };
+		
+		        // Erstelle ein Promise für jeden Materialtransfer (POST-Anfrage)
+		        var oBatchPromise = new Promise(function (resolve, reject) {
+		            oBackendModel.create("/transferItemSet", oPayload, {
+		                success: function (oData) {
+		                    resolve({
+		                        success: true,
+		                        material: oMaterial.Matnr
+		                    });
+		                },
+		                error: function (oError) {
+		                    reject({
+		                        success: false,
+		                        material: oMaterial.Matnr,
+		                        error: oError
+		                    });
+		                }
+		            });
+		        });
+		
+		        aBatchPromises.push(oBatchPromise);
+		    });
+		
+		    // Warte auf alle Batch-Operationen
+		    Promise.allSettled(aBatchPromises)
+		        .then(function (aResults) {
+		            var aSuccessMaterials = [];
+		            var aFailedMaterials = [];
+		            var aRemainingMaterials = [];
+		
+		            aResults.forEach(function (oResult) {
+		                if (oResult.status === "fulfilled" && oResult.value.success) {
+		                    aSuccessMaterials.push(oResult.value.material);
+		                } else if (oResult.status === "rejected") {
+		                    aFailedMaterials.push(oResult.reason.material);
+		                    // Füge fehlgeschlagene Materialien zurück zu den verbleibenden Materialien hinzu
+		                    aRemainingMaterials.push(aMaterials.find(function (mat) {
+		                        return mat.Matnr === oResult.reason.material;
+		                    }));
+		                }
+		            });
+		
+		            // Aktualisiere das Materialmodell mit den verbleibenden (fehlgeschlagenen) Materialien
+		            oMaterialModel.setProperty("/materials", aRemainingMaterials);
+		
+		            // Feedback-Nachricht
+		            var sMessage = "";
+		            if (aSuccessMaterials.length > 0) {
+		                sMessage += "Erfolgreich übertragen: " + aSuccessMaterials.join(", ") + ".\n";
+		            }
+		            if (aFailedMaterials.length > 0) {
+		                sMessage += "Fehler bei der Übertragung folgender Materialien: " + aFailedMaterials.join(", ") + ".";
+		            }
+		
+		            sap.m.MessageBox.success(sMessage);
+		
+		            // Optional: Den Transfer-Button ausblenden, wenn keine Materialien mehr im Warenkorb sind
+		            if (aRemainingMaterials.length === 0) {
+		                this.getView().byId("btnTransfer").setVisible(false);
+		            }
+		        }.bind(this))
+		        .catch(function (oError) {
+		            sap.m.MessageBox.error("Fehler beim Übertragen der Materialien.");
+		        });
 		}
     });
 });
