@@ -42,7 +42,10 @@
 			"tablet": true,
 			"phone": true
 		},
-		"supportedThemes": ["sap_hcb", "sap_belize"]
+		"supportedThemes": [
+			"sap_hcb",
+			"sap_belize"
+		]
 	},
 	"sap.ui5": {
 		"_version": "1.1.0",
@@ -81,7 +84,7 @@
 				},
 				"dataSource": "ZMDE_MM_STOCK_TRANSFER_SRV",
 				"preload": true
-			}, 
+			},
 			"materialList": {
 				"type": "sap.ui.model.json.JSONModel",
 				"settings": {},
@@ -94,9 +97,11 @@
 			}
 		},
 		"resources": {
-			"css": [{
-				"uri": "css/style.css"
-			}]
+			"css": [
+				{
+					"uri": "css/style.css"
+				}
+			]
 		},
 		"routing": {
 			"config": {
@@ -109,41 +114,52 @@
 					"target": []
 				}
 			},
-			"routes": [{
-				"name": "werkauswahl",
-				"pattern": "",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["werkauswahl"]
-			},
-			{
-				"name": "materialTransfer",
-				"pattern": "materialTransfer/{matnr}/{lgort}/{werks}",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["materialTransfer"]
-			},
-			{
-				"name": "materialDetails",
-				"pattern": "materialDetails/{matnr}/{lgort}/{werks}",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["materialDetails"]
-			},
-			{
-				"name": "bestand",
-				"pattern": "bestand/{lgort}/{werks}",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["bestand"]
-			},
-			{
-				"name": "addMaterial",
-				"pattern": "/addMaterial/{matnr}/{lgort}/{werks}/{meins}/{labst}/{maktx}",
-				"titleTarget": "",
-				"greedy": false,
-				"target": ["addMaterial"]
-			}
+			"routes": [
+				{
+					"name": "werkauswahl",
+					"pattern": "",
+					"titleTarget": "",
+					"greedy": false,
+					"target": [
+						"werkauswahl"
+					]
+				},
+				{
+					"name": "materialTransfer",
+					"pattern": "materialTransfer/{matnr}/{lgort}/{werks}",
+					"titleTarget": "",
+					"greedy": false,
+					"target": [
+						"materialTransfer"
+					]
+				},
+				{
+					"name": "materialDetails",
+					"pattern": "materialDetails/{matnr}/{lgort}/{werks}",
+					"titleTarget": "",
+					"greedy": false,
+					"target": [
+						"materialDetails"
+					]
+				},
+				{
+					"name": "bestand",
+					"pattern": "bestand/{lgort}/{werks}",
+					"titleTarget": "",
+					"greedy": false,
+					"target": [
+						"bestand"
+					]
+				},
+				{
+					"name": "addMaterial",
+					"pattern": "/addMaterial/{matnr}/{lgort}/{werks}/{meins}/{labst}/{maktx}",
+					"titleTarget": "",
+					"greedy": false,
+					"target": [
+						"addMaterial"
+					]
+				}
 			],
 			"targets": {
 				"werkauswahl": {
@@ -178,7 +194,7 @@
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/mind2/mm_kommi_pri/webapp",
+		"uri": "/sap/bc/ui5_ui5/mind2/mm_umlagerung/webapp",
 		"_version": "1.1.0"
 	},
 	"sap.platform.hcp": {

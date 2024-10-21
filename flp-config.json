@@ -1,15 +1,15 @@
 {
     "application": {
         "id": "",
-        "title": "com.mindsquare.gdmvt.remove.gooiss.mm_goods_issue_order",
+        "title": "com.mindsquare.stock.transfer.mm_umlagerung",
         "description": "SAP MM: Entnahme auf Auftrag",
         "type": "SAP_UI5_Component",
         "componentUrl": "/webapp",
-        "appUrl": "#mm_goods_issue_order-Display",
-        "navigationComponentName": "com.mindsquare.gdmvt.remove.gooiss",
-        "intentSemanticObject": "mm_goods_issue_order",
+        "appUrl": "#mm_stock_transfer",
+        "navigationComponentName": "com.mindsquare.stock.transfer",
+        "intentSemanticObject": "mm_umlagerung",
         "intentAction": "Display",
-        "html5ApplicationName": "mmgoodsissueorder",
+        "html5ApplicationName": "mmstocktransfer",
         "HCPParentApplicationName": ""
     },
     "assignment": {
@@ -23,9 +23,9 @@
     },
     "tile": {
         "type": "StaticTile",
-        "title": "Entnahme",
-        "subtitle": "auf Auftrag",
-        "searchKeywords": "Entnahme,auf Auftrag",
+        "title": "Umlagerung",
+        "subtitle": "Werk an Werk",
+        "searchKeywords": "umlagerung Werk an Werk",
         "displayIconUrl": "sap-icon://action",
         "displayInfoText": "",
         "size": "1x1",
