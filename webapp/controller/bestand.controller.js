@@ -387,6 +387,12 @@ sap.ui.define([
 		    // Zeige eine Nachricht, dass der Transfer abgebrochen wurde
 		    sap.m.MessageToast.show("Transfer abgebrochen, Warenkorb geleert.");
 		},
+		
+		embpyBasket: function() {
+		    var oMaterialListModel = this.getView().getModel("materialList");
+		    oMaterialListModel.setProperty("/materials", []); // Leeres Array setzt den Warenkorb zurück
+		
+		}
 
 		
         onUpdateFinished: function () {
