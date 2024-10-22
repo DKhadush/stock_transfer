@@ -194,7 +194,7 @@
 		}
 	},
 	"sap.platform.abap": {
-		"uri": "/sap/bc/ui5_ui5/mind2/mm_umlagerung/webapp",
+		"uri": "/sap/bc/ui5_ui5mind2/mm_umlagerung/webapp",
 		"_version": "1.1.0"
 	},
 	"sap.platform.hcp": {
